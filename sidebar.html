@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <base target="_top">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+    crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"
+    rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous">
+    </script>
+  </head>
+  <body class="bg-body">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Wordflow</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" id="prompting">Prompting</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id = "community">Community</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="m-3">
+      <div id="apikeyerror" class="alert alert-danger" style="display: none"
+      role="alert">
+        You currently do not have your openAI API Key set. To do so, go to Wordflow
+        > API Key Settings, and insert your API Key. Then, refresh this window.
+      </div>
+
+      <div id="community-div" style="display: none">
+        <div class="d-flex justify-content-center">
+          <div id = "community-spinner" class="spinner-border" style="display: none" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        <div id="load-hidden-community">
+          <div class="row">
+            <div class="col">
+              <h5 id="num_prompts"></h5>
+            </div>
+            <div class="col">
+              <div class="btn-group" role="group">
+                <button type="button" id="popular_prompts" class="btn active btn-light btn-sm">Popular</button>
+                <button type="button" id="new_prompts" class="btn btn-light btn-sm">New</button>
+              </div>
+            </div>
+          </div>
+          <h6> Popular tags </h6>
+          <div id="popular-tags"> </div>
+          <div id="card-container"> </div>
+          <div id="pages-container" class="my-2 d-flex justify-content-center"> </div>
+        </div>
+      </div>
+
+      <div id = "prompting-div">
+      <div class="modal fade" id="sharingModal" tabindex="-1" aria-labelledby="sharingModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="sharingModalLabel">Share Prompt</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form class="was-validated">
+              <div class="form-floating mb-3">
+                <input class="form-control" id="modalTitle" required>
+                <label for="modalTitle">Title</label>
+              </div>
+              <div class="form-floating mb-3">
+                <textarea class="form-control" id="modalPrompt" required></textarea>
+                <label for="modalPrompt" class="form-label">Prompt</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input class="form-control" id="modalDescription" required>
+                <label for="modalDescription">Description</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input class="form-control" id="modalTags">
+                <label for="modalTags" class="form-label">Tags</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input class="form-control" id="modalUserName">
+                <label for="modalUserName" class="form-label">Optional Username</label>
+              </div>
+              <label class="form-label">Recommended Models: </label>
+              <div class="row">
+                <div class="col mb-1">
+                  <input type="checkbox" class="form-check-input" id="modal3.5">
+                  <label class="form-check-label" for="modal3.5">GPT 3.5</label>
+                </div>
+                <div class="col mb-1">
+                  <input type="checkbox" class="form-check-input" id="modal4">
+                  <label class="form-check-label" for="modal4">GPT 4</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col mb-1">
+                  <input type="checkbox" class="form-check-input" id="palm2">
+                  <label class="form-check-label" for="palm2">Palm 2</label>
+                </div>
+                <div class="col mb-1">
+                  <input type="checkbox" class="form-check-input" id="geminiPro">
+                  <label class="form-check-label" for="geminiPro">Gemini Pro</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col mb-1">
+                  <input type="checkbox" class="form-check-input" id="claude1">
+                  <label class="form-check-label" for="claude1">Claude 1</label>
+                </div>
+                <div class="col mb-1">
+                  <input type="checkbox" class="form-check-input" id="claude2">
+                  <label class="form-check-label" for="claude2">Claude 2</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col mb-1">
+                  <input type="checkbox" class="form-check-input" id="llama2">
+                  <label class="form-check-label" for="llama2">Llama 2</label>
+                </div>
+              </div>
+              </form>
+
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Share</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <b>
+        Suggestion Actions
+      </b>
+      <div class="btn-group  bottom-0 start-50 translate-middle-x" role="group"
+      aria-label="Basic example">
+        <button type="button" id="accept" class="btn btn-primary my-1">
+          Accept
+        </button>
+        <button type="button" id="reject" class="btn btn-primary my-1">
+          Reject
+        </button>
+      </div>
+      <div class="accordion" id="accordionExample4">
+        <div class="accordion-item mt-2">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+            data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+              <b>
+                Favorite Prompts
+              </b>
+            </button>
+          </h2>
+          <div id="collapseFour" class="accordion-collapse collapse">
+            <div class="accordion-body">
+              <div id="favorites-div">
+                <p id="no_favorites" style="display: none; font-size: 14px">
+                  You have no favorite prompts yet!
+                </p>
+                <table style="word-break: break-word; width: 100%; display: table; height: 300px; overflow: auto; " class="table" id="favorites-table">
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <form class="was-validated">
+        <b>
+          Prompt
+        </b>
+        <textarea class="form-control mt-2 form-control-sm" placeholder="Ex. Correct spelling mistakes"
+        id="prompt" rows="5" required></textarea>
+        <input type="checkbox" id="context">
+        <label for="context" style="font-size: 14px">
+          Use selection as context
+        </label>
+        <div class="accordion" id="accordionExample">
+          <div class="accordion-item mt-2">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                <b>
+                  Insert Settings
+                </b>
+              </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse">
+              <div class="accordion-body">
+                <input type="radio" id="cursor" class="form-check-input" name="insert_settings"
+                value="cursor" checked>
+                <label for="cursor" class="form-check-label" style="font-size: 15px">
+                  Insert at cursor/selection
+                </label>
+                <br>
+                <input type="radio" id="end" class="form-check-input" name="insert_settings"
+                value="end">
+                <label for="end" class="form-check-label" style="font-size: 15px">
+                  Insert at end of document
+                </label>
+                <br>
+                <input class="form-check-input" type="checkbox" id="promptdoc">
+                <label class="form-check-label" for="promptdoc" style="font-size: 15px">
+                  Insert prompt in document
+                </label>
+                <br>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion" id="accordionExample2">
+          <div class="accordion-item mt-2">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                <b>
+                  Model Settings
+                </b>
+              </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse">
+              <div class="accordion-body">
+                <label>
+                  Specialized Behavior:
+                </label>
+                <textarea class="form-control mt-2 form-control-sm" placeholder="Ex. Act as a career advisor"
+                id="specialprompt" rows="3"></textarea>
+                <div class="form-floating mt-1">
+                  <select class="form-select form-select-sm" id="model-select" aria-label="Floating label select example">
+                    <option value="gpt-3.5-turbo">
+                      gpt-3.5-turbo
+                    </option>
+                    <option value="gpt-4">
+                      gpt-4
+                    </option>
+                    <option value="gpt-3.5-turbo-1106">
+                      gpt-3.5-turbo-1106
+                    </option>
+                  </select>
+                  <label for="model-select">
+                    Model Name
+                  </label>
+                </div>
+                <div class="form-floating mt-1">
+                  <input class="form-control" id="temperature" type="number" value="0" min="0"
+                  max="1" step="0.1" required>
+                  <label for="temperature">
+                    Temperature
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="position-relative">
+          <button type="button" id="llm-submit" style="margin: auto;display:block"
+          class="btn btn-primary mt-2 ">
+            Submit
+          </button>
+        </div>
+      </form>
+      <div class="mt-1">
+        <div class="accordion" id="accordionExample3">
+          <div class="accordion-item mt-2">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                <b>
+                  Prompt History
+                </b>
+              </button>
+            </h2>
+            <div id="collapseThree" class="accordion-collapse collapse">
+              <div class="accordion-body">
+                <button type="button" class="btn btn-outline-primary btn-sm" id="clear-history"
+                style="float: right; margin-left: -50%;">
+                  Clear
+                </button>
+                <div id="history_div" class="mt-5">
+                  <p id="no_history" style="display: none; font-size: 14px">
+                    You have no prompt history yet!
+                  </p>
+                  <table style="word-break: break-word; display: table; height: 300px; overflow: auto; width: 100%;" class="table" id="history_table">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+      
+    </div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+    </script>
+    <script>
+      /**
+       * On document load, assign click handlers to each button and try to load the
+       * user's origin and destination language preferences if previously set.
+       */
+      $(function() {
+        $('#llm-submit').click(runLLM);
+        $('#accept').click(acceptSuggestions);
+        $('#reject').click(rejectSuggestions);
+        $('#clear-history').click(clearPromptHistory);
+        $('#prompting').click(pagePrompting);
+        $('#community').click(pageCommunity);
+        $('#popular_prompts').click(updatePopular);
+        $('#new_prompts').click(updateNew);
+
+        google.script.run.withSuccessHandler(function(obj) {
+          if (!obj.openAIAPIKey) {
+            $("#apikeyerror").show();
+            $('#llm-submit').attr('disabled', 'disabled');
+          }
+        }).getAPIKey();
+
+        $("#no_history").show();
+
+        google.script.run.withSuccessHandler(function(favorites) {
+          if (favorites.length == 0) {
+            $("#no_favorites").show();
+          } else {
+            for (var j = 0; j < favorites.length; j++) {
+              addToTableFavoriteOnly(favorites[j]);
+            }
+          }
+        }).getFavorites();
+
+
+        //document.querySelector("html").setAttribute("data-bs-theme", "dark");
+      })
+
+      function updatePopular() {
+        $("#popular_prompts").attr("class", "btn active btn-light btn-sm");
+        $("#new_prompts").attr("class",  "btn btn-light btn-sm");
+        $('#card-container').empty();
+        $("#pages-container").empty();
+        loadPagePopularElements();
+      }
+
+      function updateNew() {
+        $("#popular_prompts").attr("class", "btn btn-light btn-sm");
+        $("#new_prompts").attr("class",  "btn active btn-light btn-sm");
+        $('#card-container').empty();
+        $("#pages-container").empty();
+        loadPageNewElements();
+      }
+
+      function pagePrompting() {
+        $("#prompting").attr("class", "nav-link active");
+        $('#community').attr("class", "nav-link");
+        $("#community-div").hide();
+        $("#prompting-div").show();
+      }
+
+      function pageCommunity() {
+        $("#community").attr("class", "nav-link active");
+        $('#prompting').attr("class", "nav-link");
+        $("#prompting-div").hide();
+        updatePopular();
+        $("#community-div").show();
+      }
+
+      function loadPagePopularElements() {
+        $("#community-spinner").show();
+        $("#load-hidden-community").hide();
+        google.script.run.withSuccessHandler(function(popular) {
+          google.script.run.withSuccessHandler(function(tags) {
+            $('#num_prompts').text(popular.length + " prompts");
+            createPaginatedCards(popular);
+            createTagElements(tags, true);
+            $("#community-spinner").hide();
+            $("#load-hidden-community").show();
+         }).getPopularTags();
+        }).getMostPopular();
+      }
+
+      function loadPageNewElements() {
+        $("#community-spinner").show();
+        $("#load-hidden-community").hide();
+        google.script.run.withSuccessHandler(function(recents) {
+          google.script.run.withSuccessHandler(function(tags) {
+            $('#num_prompts').text(recents.length + " prompts");
+            createPaginatedCards(recents);
+            createTagElements(tags, false);
+            $("#community-spinner").hide();
+            $("#load-hidden-community").show();
+          }).getPopularTags();
+        }).getMostRecent();
+      }
+
+      function createPaginatedCards(arr) {
+        /* for (var i = 0; i < arr.length; i++) {
+            var elem = arr[i];
+            createInfoCard(elem.prompt, elem.tags, elem.temperature, elem.userName, elem.description, elem.icon, elem.promptRunCount, elem.title, elem.recommendedModels, elem.injectionMode, elem.created);
+        } */
+        var cardsPerPage = 5;
+        var totalPages = Math.ceil(arr.length / cardsPerPage);
+        var paginationContainer = $('<div>').addClass('pagination-container').css({
+            'overflow-x': 'auto', 
+            'white-space': 'nowrap'
+        });
+        var pagination = $('<ul>').addClass('pagination pagination-sm');
+        for (var page = 0; page < totalPages; page++) {
+            (function (currentPage) {
+                var listItem = $('<li>').addClass('page-item');
+                if (page == 0) {
+                  listItem.addClass('active');
+                }
+                var linkElement = $('<a>').addClass('page-link').text(currentPage + 1);
+                listItem.append(linkElement);
+                linkElement.on('click', function () {
+                  pagination.find('.page-item').removeClass('active');
+                  listItem.addClass('active');
+                    $('#card-container').empty();
+                    var startIndex = currentPage * cardsPerPage;
+                    var endIndex = Math.min(startIndex + cardsPerPage, arr.length);
+
+                    for (var j = startIndex; j < endIndex; j++) {
+                        var elem = arr[j];
+                        createInfoCard(elem.prompt, elem.tags, elem.temperature, elem.userName, elem.description, elem.icon, elem.promptRunCount, elem.title, elem.recommendedModels, elem.injectionMode, elem.created, pagination);
+                    }
+                });
+                pagination.append(listItem);
+            })(page);
+        }
+        //Initialize starting page
+        for (var s = 0; s < Math.min(cardsPerPage, arr.length); s++) {
+          var elem = arr[s];
+          createInfoCard(elem.prompt, elem.tags, elem.temperature, elem.userName, elem.description, elem.icon, elem.promptRunCount, elem.title, elem.recommendedModels, elem.injectionMode, elem.created, pagination);
+        }
+        paginationContainer.append(pagination);
+        $("#pages-container").append(paginationContainer);
+
+      }
+
+      function createTagElements(tags, popular) {
+        var popularTagsDiv = $("#popular-tags");
+        popularTagsDiv.empty();
+
+        tags.forEach(function(tagP) {
+          if (tagP.tag) {
+            var tagElement = $("<span>").addClass("badge text-bg-secondary me-1").text(tagP.tag);
+            popularTagsDiv.append(tagElement);
+            tagElement.on('click', function() {
+                $("#community-spinner").show();
+                $("#load-hidden-community").hide();
+                $('#card-container').empty();
+                $("#pages-container").empty();
+                if (!popular) {
+                  google.script.run.withSuccessHandler(function(recents) {
+                      $('#num_prompts').text(recents.length + " prompts");
+                      createPaginatedCards(recents);
+                      $("#community-spinner").hide();
+                      $("#load-hidden-community").show();
+                  }).getMostRecent(tagP.tag);
+                } else {
+                  google.script.run.withSuccessHandler(function(popular) {
+                      $('#num_prompts').text(popular.length + " prompts");
+                      createPaginatedCards(popular);
+                      $("#community-spinner").hide();
+                      $("#load-hidden-community").show();
+                  }).getMostPopular(tagP.tag);
+                }
+            });
+          }
+        });
+      }
+
+      function createInfoCard(prompt, tags, temperature, userName, description, icon, promptRunCount, title, recommendedModels, injectionMode, dateCreated) {
+        dateCreated = new Date(dateCreated);
+        dateCreated = dateCreated.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+        if (!userName) {
+            userName = "Anonymous";
+        }
+
+        var cardHolderDiv = $('<div>').addClass('card-holder-div mt-3');
+        var card = $('<div>').addClass('card collapsed');
+        var cardBody = $('<div>').addClass('card-body');
+
+        var cardTitle = $('<h5>').addClass('card-title').text(title);
+        var cardSubtitle = $('<h6>').addClass('card-subtitle mb-2 text-body-secondary').text(userName + ' | ' + dateCreated + ' | ' + promptRunCount + ' runs');
+        var descriptionHeading = $('<b>').addClass('card-text').text('Description');
+        var descriptionText = $('<p>').text(description);
+
+        var hiddenDiv = $('<div>').addClass('d-none');
+        var promptHeading = $('<b>').addClass('card-text').text('Prompt');
+        var promptText = $('<p>').text(prompt);
+        var tagsHeading = $('<b>').addClass('card-text').text('Tags');
+        var tagDiv = $('<div>');
+        for (var i = 0; i < tags.length; i++) {
+            var badge = $('<span>').addClass('badge text-bg-secondary me-1').text(tags[i]);
+            tagDiv.append(badge);
+        }
+
+        var moreInfoHeading = $('<b>').addClass('card-text').text('More Info');
+        var injectionModeText = $('<p>').css({ 'font-size': '13px', 'margin-bottom': '0', 'padding-bottom': '0' }).text('Injection mode: ' + injectionMode);
+        recommendedModels = recommendedModels.length > 0 ? recommendedModels.join(', ') : "N/A";
+        var modelsText = $('<p>').css({ 'font-size': '13px', 'margin-bottom': '0', 'padding-bottom': '0' }).text('Models: ' + recommendedModels);
+
+        hiddenDiv.append(promptHeading, promptText, tagsHeading, tagDiv, moreInfoHeading, injectionModeText, modelsText);
+
+        expandButton = $('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708"/></svg>');
+
+        expandButton.on('click', function () {
+            card.toggleClass('expanded'); 
+            hiddenDiv.toggleClass('d-none'); 
+        }); 
+
+        // positioning elements
+        var expandBtnContainer = $('<div>').addClass('text-end');
+        expandBtnContainer.append(expandButton);
+
+        cardBody.append(cardTitle, cardSubtitle, descriptionHeading, descriptionText, hiddenDiv, expandBtnContainer);
+        card.append(cardBody);
+        cardHolderDiv.append(card);
+
+        $('#card-container').append(cardHolderDiv);
+      }
+
+      /** 
+       * Adds new entry to favorites table
+       * @param The new prompt to add to the favorites table
+      */
+      function addToTableFavoriteOnly(prompt) {
+        var table = $('#favorites-table');
+        var row = $('<tr>', {
+          "prompt": prompt
+        });
+        var cell = $('<td>', {
+          text: prompt
+        });
+        row.append(cell);
+        var cellButton = $('<td>');
+        cellButton.attr("style", "text-align: right;");
+        var className = 'heart fa fa-heart';
+        var favorite = $('<i>', {
+          class: className
+        });
+        row.click(function() {
+          $('#prompt').val(prompt);
+        });
+        favorite.click(function(event) {
+          event.stopPropagation();
+          $(this).attr("class", "heart fa fa-heart-o");
+          removeFromFavorites(this, prompt);
+        });
+        var shareImg = $('<svg class="ms-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16"> <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/></svg>');
+        
+        shareImg.on('click', 
+        function(event) {
+          event.stopPropagation();
+          $('#sharingModal').modal('show'); 
+        });
+        cellButton.append(favorite);
+        cellButton.append(shareImg);
+        row.append(cellButton);
+        row.css('font-size', '12px');
+        table.append(row);
+      }
+
+      /**
+       * Adds new entry to history table
+       * 
+       * @param pre Boolean representing whether to add the entry to the beginning of the table or at the end 
+       * @param fav Boolean representing whether to add the entry to the favorites table as well
+       * */
+      function addToTable(prompt, pre, fav) {
+        var table = $('#history_table');
+        var row = $('<tr>', {
+          "prompt": prompt, 
+        });
+        var cell = $('<td>', {
+          text: prompt
+        });
+        row.append(cell);
+        var cellButton = $('<td>');
+        cellButton.attr("style", "text-align: right;");
+        var className = fav ? 'heart fa fa-heart': 'heart fa fa-heart-o';
+        var favorite = $('<i>', {
+          class: className
+        });
+        row.click(function() {
+          $('#prompt').val(prompt);
+        });
+        favorite.on('click',
+        function(event) {
+          event.stopPropagation();
+          $(this).toggleClass("fa-heart fa-heart-o");
+          var isFavorite = $(this).hasClass('fa-heart');
+          var favoriteButton = $(this);
+          if (isFavorite) {
+            google.script.run.withSuccessHandler(function() {
+              $("#no_favorites").hide();
+              cloneToTableFavorite(favoriteButton, prompt);
+            }).addFavorite(prompt);
+          } else {
+            google.script.run.withSuccessHandler(function() {
+              $('#favorites-table tr[prompt="' + prompt + '"]:first').remove();
+              if ($('#favorites-table tbody tr').length == 0) {
+                $("#no_favorites").show();
+              }
+            }).removeFavorite(prompt);
+          }
+        });
+        var shareImg = $('<svg class="ms-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16"> <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/></svg>');
+
+        shareImg.on('click', 
+        function(event) {
+          event.stopPropagation();
+          $('#sharingModal').modal('show'); 
+        });
+        cellButton.append(favorite);
+        cellButton.append(shareImg);
+        row.append(cellButton);
+        if (pre) {
+          table.prepend(row);
+        } else {
+          table.append(row);
+        }
+        if (fav) {
+          cloneToTableFavorite(favorite, prompt);
+        }
+        table.css('font-size', '12px');
+      }
+
+      /**
+       * Clones row in history table and adds it to favorites table
+       * 
+       * @param button The button in a row to clone in the history table
+       * @param prompt The prompt in relation to the inputted button
+       * */
+      function cloneToTableFavorite(button, prompt) {
+        var listItem = $(button).closest('tr');
+
+        var clonedItem = listItem.clone();
+
+        clonedItem.click(function() {
+          $('#prompt').val(prompt);
+        });
+
+        clonedItem.find('i').click(function(event) {
+          event.stopPropagation();
+          $(button).attr("class", "heart fa fa-heart-o");
+          removeFromFavorites(this, prompt);
+        });
+        
+        clonedItem.find('svg').click(function(event) {
+          event.stopPropagation();
+          $('#sharingModal').modal('show'); 
+        });
+
+        // Add the cloned item to the favorites list
+        clonedItem.css('font-size', '12px');
+        $('#favorites-table').append(clonedItem);
+
+      }
+
+      /** 
+       * Removes a row from the favorites table, and removes a favorite from storage
+       * 
+       * @param button The button corresponding to the row to remove
+       * @param prompt The prompt to remove from favorites
+       * */
+      function removeFromFavorites(button, prompt) {
+        google.script.run.withSuccessHandler(function() {
+          $(button).closest('tr').remove();
+          if ($('#favorites-table tbody tr').length == 0) {
+            $("#no_favorites").show();
+          }
+        }).removeFavorite(prompt);
+      }
+
+      /**
+       * Clears prompt history table
+       * */
+      function clearPromptHistory() {
+        $('#history_table').empty();
+        $("#no_history").show();
+      }
+
+      /** 
+       * Calls method to get openAI API output based on inputted input
+       * */
+      function runLLM() {
+        google.script.run.withSuccessHandler(function(obj) {
+          if (!obj.openAIAPIKey) {
+            $("#apikeyerror").show();
+            $('#llm-submit').attr('disabled', 'disabled');
+          }
+        }).getAPIKey();
+
+        $('#llm-submit').attr('disabled', 'disabled');
+        var useSelection = $('#context').prop('checked');
+        var insertLocation = $('input[name="insert_settings"]').filter(":checked").val();
+        var insertPrompt = $('#promptdoc').prop('checked');
+        var specializedPrompt = $('#specialprompt').val();
+        var inputtedPrompt = $('#prompt').val();
+        google.script.run.withSuccessHandler(function() {
+          if (inputtedPrompt) {
+            $("#no_history").hide();
+            addToTable(inputtedPrompt, true, false);
+          }
+          $('#llm-submit').removeAttr('disabled');
+        }).withFailureHandler(function() {
+          $('#llm-submit').removeAttr('disabled');
+        }).generateIdeas(inputtedPrompt, $('#model-select').val(), parseFloat($('#temperature').val()), useSelection, insertLocation, insertPrompt, specializedPrompt);
+      }
+
+      /**
+       * Accepts text suggestions within selected portion of Google Document
+       * */
+      function acceptSuggestions() {
+        $('#accept').attr('disabled', 'disabled');
+        google.script.run.withSuccessHandler(function() {
+          $('#accept').removeAttr('disabled');
+        }).withFailureHandler(function() {
+          $('#accept').removeAttr('disabled');
+        }).acceptSuggested();
+      }
+
+      /** 
+       * Rejects text suggestions within selected portion of Google document
+       * */
+      function rejectSuggestions() {
+        $('#reject').attr('disabled', 'disabled');
+        google.script.run.withSuccessHandler(function() {
+          $('#reject').removeAttr('disabled');
+        }).withFailureHandler(function() {
+          $('#reject').removeAttr('disabled');
+        }).rejectSuggested();
+      }
+    </script>
+  </body>
+
+</html>
