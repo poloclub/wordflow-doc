@@ -1,3 +1,66 @@
+var promptDefaults = [
+  {
+    prompt:
+      "Generate a clever joke that playfully combines wordplay, a surprising twist, and relatable humor.",
+    tags: [],
+    temperature: 0.2,
+    userID: "5600438c-16e6-4b9b-988a-753f2a00a89c",
+    userName: "",
+    description: "",
+    icon: "😂",
+    forkFrom: "",
+    promptRunCount: 0,
+    created: "",
+    title: "Joke Generator",
+    outputParsingPattern: "",
+    outputParsingReplacement: "",
+    recommendedModels: [],
+    injectionMode: "append",
+  },
+  {
+    prompt:
+      "Translate the text in <input></input> from English to Japanese. Your output should be put in <output></output>.\n\n<input>{{text}}</input>",
+    tags: [],
+    temperature: 0.2,
+    userID: "5600438c-16e6-4b9b-988a-753f2a00a89c",
+    userName: "",
+    description: "",
+    icon: "🇯🇵",
+    forkFrom: "",
+    promptRunCount: 0,
+    created: "",
+    title: "Translate English to Japanese",
+    outputParsingPattern: ".*<output>(.*)</output>.*",
+    outputParsingReplacement: "$1",
+    recommendedModels: [],
+    injectionMode: "replace",
+  },
+  {
+    prompt: "Improve the flow of the following text.",
+    tags: ["helloo", "bye"],
+    temperature: 0.2,
+    userID: "5600438c-16e6-4b9b-988a-753f2a00a89c",
+    userName: "",
+    description: "",
+    icon: "✍️",
+    forkFrom: "",
+    promptRunCount: 0,
+    created: "",
+    title: "Improve Text Flow",
+    outputParsingPattern: "",
+    outputParsingReplacement: "",
+    recommendedModels: ["palm-2", "claude-1"],
+    injectionMode: "replace",
+  },
+];
+
+// Global Colors
+var greenText = "#4dce46";
+var greenBackground = "#BBFCB7";
+
+var redText = "#F63107";
+var redBackground = "#FDAFA8";
+
 /**
  * Creates a menu entry in the Google Docs UI when the document is opened.
  * This method is only used by the regular add-on, and is never called by
@@ -10,9 +73,12 @@
 function onOpen(e) {
   DocumentApp.getUi()
     .createMenu("Wordflow")
-    .addItem("API Key Settings", "showAPIKeySettings")
     .addItem("Launch", "showSidebar")
     .addToUi();
+}
+
+function getUiudAndUserId() {
+  return [Utilities.getUuid(), establishUIUD()];
 }
 
 function establishUIUD() {
@@ -23,110 +89,243 @@ function establishUIUD() {
   return userProperties.getProperty("uiud");
 }
 
-/**
- * Opens a sidebar in the document containing the add-on's user interface.
- * This method is only used by the regular add-on, and is never called by
- * the mobile add-on version.
- */
-function showSidebar() {
-  var ui = HtmlService.createHtmlOutputFromFile('sidebar').setTitle("Wordflow");
-  DocumentApp.getUi().showSidebar(ui);
-}
-
-/**
- * Opens a modal dialog in the document displaying the user's API Key settings.
- */
-function showAPIKeySettings() {
-  const settings =
-    HtmlService.createHtmlOutputFromFile("apikeysettings").setTitle(
-      "API Key Settings",
-    );
-  DocumentApp.getUi().showModalDialog(settings, "API Key Settings");
-}
-
-/**
- * Gets the stored user API key, if it exists.
- *
- * @return {Object} The user's API key, if
- *     it exists
- */
-function getAPIKey() {
+function initDefaults() {
   const userProperties = PropertiesService.getUserProperties();
-  return {
-    openAIAPIKey: userProperties.getProperty("openAIAPIKey"),
-  };
-}
-
-/**
- * Sets the user's API Key to the inputted string
- */
-function setAPIKey(inAPIKey) {
-  if (inAPIKey) {
-    PropertiesService.getUserProperties().setProperty("openAIAPIKey", inAPIKey);
+  if (!userProperties.getProperty("initDefault")) {
+    var index = 0;
+    promptDefaults.forEach(function (prompt) {
+      prompt["created"] = new Date().toISOString();
+      var uiud = Utilities.getUuid();
+      addPrompt(uiud, prompt);
+      addPromptFavorite(uiud, prompt, index);
+      index++;
+    });
+    userProperties.setProperty("initDefault", "initialized");
   }
 }
 
-/**
- * Removes the user's stored API Key
- */
-function removeAPIKey() {
-  PropertiesService.getUserProperties().deleteProperty("openAIAPIKey");
+function initPrefModel() {
+  const userProperties = PropertiesService.getUserProperties();
+  if (!userProperties.getProperty("prefModel")) {
+    userProperties.setProperty("prefModel", "gpt3.5-free");
+  }
 }
 
-/**
- * Returns favorite prompts
- */
-function getFavorites() {
+function setPrefModel(pref) {
+  const userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty("prefModel", pref);
+}
+
+function getPrefModel() {
+  const userProperties = PropertiesService.getUserProperties();
+  return userProperties.getProperty("prefModel");
+}
+
+function deletePrefModel() {
+  const userProperties = PropertiesService.getUserProperties();
+  userProperties.deleteProperty("prefModel");
+}
+
+function deletePromptHistory() {
+  PropertiesService.getUserProperties().deleteProperty("promptFavorites");
+  PropertiesService.getUserProperties().deleteProperty("localPrompts");
+  PropertiesService.getUserProperties().deleteProperty("initDefault");
+}
+
+function addPromptFavorite(uiud) {
   var favorites =
-    PropertiesService.getUserProperties().getProperty("favorites");
+    PropertiesService.getUserProperties().getProperty("promptFavorites");
   if (!favorites) {
-    favorites = [];
+    favorites = ["", "", ""];
+  } else {
+    favorites = JSON.parse(favorites);
+  }
+  for (var i = 0; i < favorites.length; i++) {
+    if (favorites[i] == "") {
+      favorites[i] = uiud;
+      PropertiesService.getUserProperties().setProperty(
+        "promptFavorites",
+        JSON.stringify(favorites),
+      );
+      return favorites;
+    }
+  }
+  return [];
+}
+
+function removePromptFavorite(uiud) {
+  var favorites =
+    PropertiesService.getUserProperties().getProperty("promptFavorites");
+  if (!favorites) {
+    favorites = ["", "", ""];
+  } else {
+    favorites = JSON.parse(favorites);
+  }
+  for (var i = 0; i < favorites.length; i++) {
+    if (favorites[i] == uiud) {
+      favorites[i] = "";
+      PropertiesService.getUserProperties().setProperty(
+        "promptFavorites",
+        JSON.stringify(favorites),
+      );
+      return favorites;
+    }
+  }
+  return favorites;
+}
+
+function getPromptFavorites() {
+  var favorites =
+    PropertiesService.getUserProperties().getProperty("promptFavorites");
+  if (!favorites) {
+    favorites = ["", "", ""];
   } else {
     favorites = JSON.parse(favorites);
   }
   return favorites;
 }
 
-/**
- * Clears favorite prompts
- */
-function clearFavorites() {
-  PropertiesService.getUserProperties().deleteProperty("favorites");
+function getFavoritesForToolbar() {
+  var favorites = getPromptFavorites();
+  var localPrompts = getPrompts();
+  return [favorites, localPrompts];
+}
+
+function addPrompt(uiud, prompt) {
+  var localPrompts =
+    PropertiesService.getUserProperties().getProperty("localPrompts");
+  if (!localPrompts) {
+    localPrompts = {};
+  } else {
+    localPrompts = JSON.parse(localPrompts);
+  }
+  localPrompts[uiud] = prompt;
+  PropertiesService.getUserProperties().setProperty(
+    "localPrompts",
+    JSON.stringify(localPrompts),
+  );
+}
+
+function editPrompt(uiud, newInformation) {
+  var allPrompts = getPrompts();
+  var favorites = getPromptFavorites();
+  if (uiud in allPrompts) {
+    allPrompts[uiud] = newInformation;
+  }
+  PropertiesService.getUserProperties().setProperty(
+    "localPrompts",
+    JSON.stringify(allPrompts),
+  );
+  return favorites;
+}
+
+function addPromptRun(uiud) {
+  var allPrompts = getPrompts();
+  if (uiud in allPrompts) {
+    allPrompts[uiud]["promptRunCount"] += 1;
+  }
+  PropertiesService.getUserProperties().setProperty(
+    "localPrompts",
+    JSON.stringify(allPrompts),
+  );
+}
+
+function getPrompts() {
+  var localPrompts =
+    PropertiesService.getUserProperties().getProperty("localPrompts");
+  if (!localPrompts) {
+    localPrompts = {};
+  } else {
+    localPrompts = JSON.parse(localPrompts);
+  }
+  return localPrompts;
+}
+
+function removePrompt(uiud) {
+  var localPrompts =
+    PropertiesService.getUserProperties().getProperty("localPrompts");
+  if (!localPrompts) {
+    localPrompts = {};
+  } else {
+    localPrompts = JSON.parse(localPrompts);
+  }
+  if (uiud in localPrompts) {
+    delete localPrompts[uiud];
+  }
+  PropertiesService.getUserProperties().setProperty(
+    "localPrompts",
+    JSON.stringify(localPrompts),
+  );
+  return removePromptFavorite(uiud);
 }
 
 /**
- * Adds inputted prompt to favorite prompts
- *
- * @param prompt The new prompt to add to favorites
+ * Opens a sidebar in the document containing the add-on's user interface.
+ * This method is only used by the regular add-on, and is never called by
+ * the mobile add-on version.
  */
-function addFavorite(prompt) {
-  if (prompt) {
-    var favorites = getFavorites();
-    favorites.unshift(prompt);
-    PropertiesService.getUserProperties().setProperty(
-      "favorites",
-      JSON.stringify(favorites),
-    );
+function showSidebar() {
+  initDefaults();
+  initPrefModel();
+  var ui =
+    HtmlService.createHtmlOutputFromFile("sidebar").setTitle("Wordflow");
+  DocumentApp.getUi().showSidebar(ui);
+}
+
+function showPromptManager() {
+  const promptManager = HtmlService.createHtmlOutputFromFile("promptmanager")
+    .setWidth(800)
+    .setHeight(500)
+    .setTitle("Prompt Manager");
+  DocumentApp.getUi().showModalDialog(promptManager, "Prompt Manager");
+}
+
+/**
+ * Gets the user's OpenAI API key, if it exists.
+ *
+ * @return {Object} The user's API key, if
+ *     it exists
+ */
+function getOpenAIAPIKey() {
+  const userProperties = PropertiesService.getUserProperties();
+  return userProperties.getProperty("openAIAPIKey");
+}
+
+/**
+ * Sets the user's OpenAI API Key to the inputted string
+ */
+function setOpenAIAPIKey(inAPIKey) {
+  if (inAPIKey) {
+    PropertiesService.getUserProperties().setProperty("openAIAPIKey", inAPIKey);
   }
 }
 
 /**
- * Removes inputted prompt from favorites
+ * Gets the user's Gemini Pro API Key, if it exists.
  *
- * @param prompt The prompt to remove from favorites
+ * @return {Object} The user's API key, if
+ *     it exists
  */
-function removeFavorite(prompt) {
-  if (prompt) {
-    var favorites = getFavorites();
-    const index = favorites.indexOf(prompt);
-    if (index > -1) {
-      favorites.splice(index, 1);
-    }
-    PropertiesService.getUserProperties().setProperty(
-      "favorites",
-      JSON.stringify(favorites),
-    );
+function getGeminiAPIKey() {
+  const userProperties = PropertiesService.getUserProperties();
+  return userProperties.getProperty("geminiAPIKey");
+}
+
+/**
+ * Sets the user's Geminin API Key to the inputted string
+ */
+function setGeminiAPIKey(inAPIKey) {
+  if (inAPIKey) {
+    PropertiesService.getUserProperties().setProperty("geminiAPIKey", inAPIKey);
   }
+}
+
+/**
+ * Removes the user's stored API Keys
+ */
+function removeAPIKeys() {
+  PropertiesService.getUserProperties().deleteProperty("openAIAPIKey");
+  PropertiesService.getUserProperties().deleteProperty("geminiAPIKey");
 }
 
 /**
@@ -136,41 +335,20 @@ function removeFavorite(prompt) {
  * @param selectedText The text selected in the Google Document, if any
  * @param modeltype The model name to be used
  * @param temperature Temperature argument in openAI API request
- * @param maxresponse Maximum response tokens argument in openAI API request
- * @param prespen Presence penalty argument in openAI API request
- * @param freqpen Frequency penalty in openAI API request
- * @param topp Top-p argument in openAI API request
  * @param usesel Whether the text selected in the document should be used as input in the openAI API request
- * @param specializedPrompt Any specialized requests for the openAI API request
  */
-function completion(
-  input,
-  selectedText,
-  modeltype,
-  temperature,
-  usesel,
-  specializedPrompt,
-) {
-  var apiKey = getAPIKey().openAIAPIKey;
+function completion(input, selectedText, modeltype, temperature, usesel) {
+  var apiKey = getOpenAIAPIKey();
   var model = modeltype;
+  if (usesel) {
+    input += " "+selectedText;
+  }
   var messages = [
     {
-      role: "system",
+      role: "user",
       content: input,
     },
   ];
-  if (specializedPrompt) {
-    messages.push({
-      role: "system",
-      content: specializedPrompt,
-    });
-  }
-  if (usesel) {
-    messages.push({
-      role: "user",
-      content: selectedText,
-    });
-  }
   var requestOptions = {
     method: "POST",
     headers: {
@@ -203,112 +381,164 @@ function completion(
   return plainText;
 }
 
-/**
- * Constructs response for prompt and inserts it into Google Document based on selected settings
- *
- * @param input The inputted prompt
- * @param temperature Temperature argument in openAI API request
- * @param maxresponse Maximum response tokens argument in openAI API request
- * @param prespen Presence penalty argument in openAI API request
- * @param freqpen Frequency penalty in openAI API request
- * @param topp Top-p argument in openAI API request
- * @param usesel Whether the text selected in the document should be used as input in the openAI API request
- * @param insertLocation Where in the Google Document the response should be inserted
- * @param specializedPrompt Any specialized requests for the openAI API request
- *
- */
+function geminiCompletion(input, selectedText, temperature, usesel) {
+  var geminiApiKey = getGeminiAPIKey();
+  var messages = [
+    {
+      role: "user",
+      parts: [
+        {
+          text: input,
+        },
+      ],
+    },
+  ];
+  if (usesel) {
+    messages.push({
+      role: "user",
+      parts: [
+        {
+          text: selectedText,
+        },
+      ],
+    });
+  }
+
+  var payload = {
+    contents: messages,
+    generationConfig: {
+      temperature: temperature,
+    },
+  };
+
+  var url =
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" +
+    geminiApiKey;
+  var options = {
+    method: "post",
+    contentType: "application/json",
+    payload: JSON.stringify(payload),
+  };
+
+  var response = UrlFetchApp.fetch(url, options);
+  var responseData = JSON.parse(response.getContentText());
+  return responseData.candidates[0].content?.parts[0].text;
+}
+
 function generateIdeas(
-  input,
-  model,
+  title,
+  emoji,
+  prompt,
   temperature,
-  usesel,
+  parsingOutputPattern,
+  parsingOutputReplacement,
   insertLocation,
-  insertPrompt,
-  specializedPrompt,
+  modelType,
 ) {
   var doc = DocumentApp.getActiveDocument();
-  if (usesel) {
-    var selection = doc.getSelection();
-    if (selection) {
-      var elements = selection.getRangeElements();
-      var completeString = "";
-      var startingPlacement = -1;
-      var startingPlacementInd = -1;
-      for (var i = 0; i < elements.length; i++) {
-        var element = elements[i];
-        if (element.getElement().editAsText) {
-          var [start, end, before, placement] = getStartAndEnd(element);
-          if (end == -1) {
-            continue;
-          }
-          startingPlacement = startingPlacement == -1 ? placement : startingPlacement;
-          startingPlacementInd = startingPlacementInd == -1? start : startingPlacementInd;
-          completeString += before.substring(start, end + 1);
-        }
-        if (insertLocation == "cursor") {
-          placement.deleteText(start, end);
-        }
+  var selection = doc.getSelection();
+  var formattedName = formatLLMName(modelType);
+  if (selection) {
+    var elements = selection.getRangeElements();
+    var completeString = "";
+    var startingPlacement = -1;
+    var startingPlacementInd = -1;
+    for (var i = 0; i < elements.length; i++) {
+      var element = elements[i];
+      if (element.getElement().editAsText) {
+        var [start, end, before, placement] = getStartAndEnd(element);
+        startingPlacement =
+          startingPlacement == -1 ? placement : startingPlacement;
+        startingPlacementInd =
+          startingPlacementInd == -1 ? start : startingPlacementInd;
+        completeString += before.substring(start, end + 1);
       }
-      var generatedText = completion(
-        input,
-        completeString,
-        model,
-        temperature,
-        usesel,
-        specializedPrompt,
-      );
-      if (insertLocation == "cursor") {
-        if (insertPrompt) {
-          generatedText = input + " " + generatedText; 
-        }
-        var dmp = new diff_match_patch();
-        var diff = dmp.diff_main(completeString, generatedText);
-        insertTextIncludeDiff(startingPlacement, startingPlacementInd, diff);
-      } else {
-        insertAtEnd(doc, generatedText, insertPrompt, input);
+      if (insertLocation == "replace" && start != -1 && end != -1) {
+        placement.deleteText(start, end);
       }
     }
-  } else if (!usesel) {
-    var generatedText = completion(
-      input,
-      "",
-      model,
+    var generatedText = generateLLMCompletion(
+      prompt,
+      completeString,
+      modelType,
       temperature,
-      usesel,
-      specializedPrompt,
+      true,
     );
-    if (insertLocation == "cursor") {
+    if (parsingOutputPattern && parsingOutputReplacement) {
+      let regex = new RegExp(parsingOutputPattern, "g");
+      generatedText = generatedText.replace(regex, parsingOutputReplacement);
+    }
+    if (insertLocation == "replace") {
+      var dmp = new diff_match_patch();
+      var diff = dmp.diff_main(completeString, generatedText);
+      insertTextIncludeDiff(startingPlacement, startingPlacementInd, diff);
+    } else {
+      insertAtEnd(doc, generatedText);
+    }
+    if (formattedName != "gpt-3.5-free") {
+      submitPromptRun(prompt, completeString, temperature, formattedName);
+    }
+  } else {
+    var generatedText = generateLLMCompletion(
+      prompt,
+      "",
+      modelType,
+      temperature,
+      false,
+    );
+    if (parsingOutputPattern && parsingOutputReplacement) {
+      let regex = new RegExp(parsingOutputPattern, "g");
+      generatedText = generatedText.replace(regex, parsingOutputReplacement);
+    }
+    if (insertLocation == "replace") {
       var cursor = doc.getCursor();
       if (cursor) {
-        if (insertPrompt) {
-          generatedText = input + " " + generatedText;
-        }
         var newText = cursor.insertText(generatedText);
-        newText.setBackgroundColor(0, generatedText.length - 1, "#BBFCB7");
-        newText.setForegroundColor(0, generatedText.length - 1, "#6BDD64");
+        newText.setBackgroundColor(
+          0,
+          generatedText.length - 1,
+          greenBackground,
+        );
+        newText.setForegroundColor(0, generatedText.length - 1, greenText);
         newText.setUnderline(0, generatedText.length - 1, true);
       } else {
-        var selection = doc.getSelection();
-        if (selection) {
-          var element = selection.getRangeElements()[0];
-          var [start, end, before, placement] = getStartAndEnd(element);
-          before = before.substring(start, end + 1);
-          if (start <= end) {
-            placement.deleteText(start, end);
-          }
-          if (insertPrompt) {
-            generatedText = input + " " + generatedText;
-          }
-          var dmp = new diff_match_patch();
-          var diff = dmp.diff_main(before, generatedText);
-          insertTextIncludeDiff(placement, start, diff);
-        }
+        insertAtEnd(doc, generatedText);
       }
     } else {
-      insertAtEnd(doc, generatedText, insertPrompt, input);
+      insertAtEnd(doc, generatedText);
+    }
+    if (formattedName != "gpt-3.5-free") {
+      submitPromptRun(prompt, "", temperature, formattedName);
     }
   }
-  submitPromptRun(input, "", temperature, "gpt-3.5");
+}
+
+function generateLLMCompletion(
+  input,
+  selectedText,
+  modeltype,
+  temperature,
+  usesel,
+) {
+  if (modeltype == "geminiPro") {
+    return geminiCompletion(input, selectedText, temperature, usesel);
+  } else if (modeltype == "gpt3.5-free") {
+    return runPromptFree(input, selectedText, temperature);
+  } else {
+    return completion(input, selectedText, modeltype, temperature, usesel);
+  }
+}
+
+function formatLLMName(llm) {
+  if (llm == "gpt3.5-free") {
+    return "gpt-3.5-free";
+  } else if (llm == "gpt-3.5-turbo" || llm == "gpt-3.5-turbo-1106") {
+    return "gpt-3.5";
+  } else if (llm == "gpt-4") {
+    return llm;
+  } else if (llm == "geminiPro") {
+    return "gemini-pro";
+  }
 }
 
 /**
@@ -337,21 +567,25 @@ function getStartAndEnd(element) {
  * @param insertPrompt Whether or not to insert to prompt as well
  * @param input Contains prompt
  */
-function insertAtEnd(doc, generatedText, insertPrompt, input) {
-  /*var editor = doc.getBody().editAsText();//.setBackgroundColor("#BBFCB7").setForegroundColor("#6BDD64").setUnderline();
-  if (insertPrompt) {
-    editor.appendText(input + " ");
-  }
-  editor.appendText(generatedText); */
+function insertAtEnd(doc, generatedText) {
   var editor = doc.getBody().editAsText();
   var startOffset = editor.getText().length;
-  if (insertPrompt) {
-    generatedText = input +" " + generatedText;
-  }
   var newText = editor.appendText(generatedText);
-  newText.setBackgroundColor(startOffset, startOffset + generatedText.length - 1, "#BBFCB7");
-  newText.setForegroundColor(startOffset, startOffset + generatedText.length - 1, "#6BDD64");
-  newText.setUnderline(startOffset, startOffset + generatedText.length - 1, true);
+  newText.setBackgroundColor(
+    startOffset,
+    startOffset + generatedText.length - 1,
+    greenBackground,
+  );
+  newText.setForegroundColor(
+    startOffset,
+    startOffset + generatedText.length - 1,
+    greenText,
+  );
+  newText.setUnderline(
+    startOffset,
+    startOffset + generatedText.length - 1,
+    true,
+  );
 }
 
 /**
@@ -367,15 +601,15 @@ function insertTextIncludeDiff(placement, start, diff) {
     var length = t[1].length;
     if (t[0] == -1) {
       placement.insertText(start, t[1]);
-      placement.setForegroundColor(start, start + length - 1, "#F63107");
-      placement.setBackgroundColor(start, start + length - 1, "#FDAFA8");
+      placement.setForegroundColor(start, start + length - 1, redText);
+      placement.setBackgroundColor(start, start + length - 1, redBackground);
       placement.setStrikethrough(start, start + length - 1, true);
     } else if (t[0] == 0) {
       placement.insertText(start, t[1]);
     } else if (t[0] == 1) {
       placement.insertText(start, t[1]);
-      placement.setBackgroundColor(start, start + length - 1, "#BBFCB7");
-      placement.setForegroundColor(start, start + length - 1, "#6BDD64");
+      placement.setBackgroundColor(start, start + length - 1, greenBackground);
+      placement.setForegroundColor(start, start + length - 1, greenText);
       placement.setUnderline(start, start + length - 1, true);
     }
   }
@@ -422,22 +656,24 @@ function acceptSuggested() {
         }
         placement.deleteText(start, textLength);
         placement.insertText(start, replacement);
-        placement.setUnderline(start, start + replacement.length - 1, false);
-        placement.setStrikethrough(
-          start,
-          start + replacement.length - 1,
-          false,
-        );
-        placement.setBackgroundColor(
-          start,
-          start + replacement.length - 1,
-          "#FFFFFF",
-        );
-        placement.setForegroundColor(
-          start,
-          start + replacement.length - 1,
-          "#000000",
-        );
+        if (start <= start + replacement.length - 1) {
+          placement.setUnderline(start, start + replacement.length - 1, false);
+          placement.setStrikethrough(
+            start,
+            start + replacement.length - 1,
+            false,
+          );
+          placement.setBackgroundColor(
+            start,
+            start + replacement.length - 1,
+            "#FFFFFF",
+          );
+          placement.setForegroundColor(
+            start,
+            start + replacement.length - 1,
+            "#000000",
+          );
+        }
       }
     }
   }
@@ -484,97 +720,185 @@ function rejectSuggested() {
         }
         placement.deleteText(start, textLength);
         placement.insertText(start, replacement);
-        placement.setUnderline(start, start + replacement.length - 1, false);
-        placement.setStrikethrough(
-          start,
-          start + replacement.length - 1,
-          false,
-        );
-        placement.setBackgroundColor(
-          start,
-          start + replacement.length - 1,
-          "#FFFFFF",
-        );
-        placement.setForegroundColor(
-          start,
-          start + replacement.length - 1,
-          "#000000",
-        );
+        if (start <= start + replacement.length - 1) {
+          placement.setUnderline(start, start + replacement.length - 1, false);
+          placement.setStrikethrough(
+            start,
+            start + replacement.length - 1,
+            false,
+          );
+          placement.setBackgroundColor(
+            start,
+            start + replacement.length - 1,
+            "#FFFFFF",
+          );
+          placement.setForegroundColor(
+            start,
+            start + replacement.length - 1,
+            "#000000",
+          );
+        }
       }
     }
   }
 }
 
-function getMostRecent(tag = ""){
-  var url = 'https://62uqq9jku8.execute-api.us-east-1.amazonaws.com/prod/records?mostRecent=true&&tag='+tag;
+function getMostRecent(tag = "") {
+  var url =
+    "https://62uqq9jku8.execute-api.us-east-1.amazonaws.com/prod/records?mostRecent=true&&tag=" +
+    tag;
 
   var options = {
-     "async": true,
-     "method" : "GET",
-     "headers" : {
-       "origin": "https://poloclub.github.io"
-     }
-   };
+    async: true,
+    method: "GET",
+    headers: {
+      origin: "https://poloclub.github.io",
+    },
+  };
 
   var response = UrlFetchApp.fetch(url, options);
-  console.log(response.toString());
   return JSON.parse(response);
 }
 
+function getPopularTagsAndMostPopular() {
+  return [getPopularTags(), getMostPopular()];
+}
+
+function getPopularTagsAndMostRecent() {
+  return [getPopularTags(), getMostRecent()];
+}
+
 function getMostPopular(tag = "") {
-  var url = 'https://62uqq9jku8.execute-api.us-east-1.amazonaws.com/prod/records?mostPopular=true&&tag='+tag;
+  var url =
+    "https://62uqq9jku8.execute-api.us-east-1.amazonaws.com/prod/records?mostPopular=true&&tag=" +
+    tag;
 
   var options = {
-     "async": true,
-     "method" : "GET",
-     "headers" : {
-       "origin": "https://poloclub.github.io"
-     }
-   };
+    async: true,
+    method: "GET",
+    headers: {
+      origin: "https://poloclub.github.io",
+    },
+  };
 
   var response = UrlFetchApp.fetch(url, options);
-  console.log(JSON.parse(response)[0]);
   return JSON.parse(response);
 }
 
 function getPopularTags() {
-  var url = 'https://62uqq9jku8.execute-api.us-east-1.amazonaws.com/prod/records?popularTags=true';
+  var url =
+    "https://62uqq9jku8.execute-api.us-east-1.amazonaws.com/prod/records?popularTags=true";
 
   var options = {
-     "async": true,
-     "method" : "GET",
-     "headers" : {
-       "origin": "https://poloclub.github.io"
-     }
-   };
+    async: true,
+    method: "GET",
+    headers: {
+      origin: "https://poloclub.github.io",
+    },
+  };
 
   var response = UrlFetchApp.fetch(url, options);
-  console.log(response.getHeaders());
   return JSON.parse(response);
 }
 
 function submitPromptRun(prompt, text, temperature, model) {
-  var url = 'https://62uqq9jku8.execute-api.us-east-1.amazonaws.com/prod/records?type=run';
+  var url =
+    "https://62uqq9jku8.execute-api.us-east-1.amazonaws.com/prod/records?type=run";
   var payload = {
-    prompt: prompt, 
-    text: text, 
-    temperature: temperature, 
-    userID: establishUIUD(), 
-    model: model
-  }
+    prompt: prompt,
+    text: text,
+    temperature: temperature,
+    userID: establishUIUD(),
+    model: model,
+  };
   var options = {
-     "async": true,
-     "method" : "POST",
-     "headers" : {
-       "origin": "https://poloclub.github.io",
-       "Content-Type": "application/json", 
-       "Cookie": 'runRef=0617TvEL06VVjEO0NbaHBERmFVThqiJ'
-      }, 
-      "credentials": 'include',
-      "payload": JSON.stringify(payload),
+    async: true,
+    method: "POST",
+    headers: {
+      origin: "https://poloclub.github.io",
+      "Content-Type": "application/json",
+      Cookie: "runRef=0617TvEL06VVjEO0NbaHBERmFVThqiJ",
+    },
+    credentials: "include",
+    payload: JSON.stringify(payload),
   };
   UrlFetchApp.fetch(url, options);
 }
 
+function sharePrompt(
+  prompt,
+  tags,
+  temperature,
+  userName,
+  description,
+  icon,
+  title,
+  recommendedModels,
+  injectionMode,
+  outputParsingPattern,
+  outputParsingReplacement,
+) {
+  tags = tags.split(",").map(function (tag) {
+    return tag.trim();
+  });
 
+  var url =
+    "https://62uqq9jku8.execute-api.us-east-1.amazonaws.com/prod/records?type=prompt";
+  var payload = {
+    prompt: prompt,
+    tags: tags,
+    temperature: temperature,
+    userName: userName,
+    description: description,
+    icon: icon,
+    forkFrom: "",
+    title: title,
+    userID: establishUIUD(),
+    recommendedModels: recommendedModels,
+    injectionMode: injectionMode,
+    outputParsingPattern: outputParsingPattern,
+    outputParsingReplacement: outputParsingReplacement,
+  };
+  var options = {
+    async: true,
+    method: "POST",
+    headers: {
+      origin: "https://poloclub.github.io",
+      "Content-Type": "application/json",
+      Cookie: "runRef=0617TvEL06VVjEO0NbaHBERmFVThqiJ",
+    },
+    credentials: "include",
+    payload: JSON.stringify(payload),
+  };
+  UrlFetchApp.fetch(url, options);
+}
 
+function runPromptFree(input, selectedText, temperature) {
+  var url =
+    "https://62uqq9jku8.execute-api.us-east-1.amazonaws.com/prod/records?type=run";
+  var payload = {
+    prompt: input,
+    text: selectedText,
+    temperature: temperature,
+    userID: establishUIUD(),
+    model: "gpt-3.5-free",
+  };
+  var options = {
+    async: true,
+    method: "POST",
+    headers: {
+      origin: "https://poloclub.github.io",
+      "Content-Type": "application/json",
+      Cookie: "runRef=0617TvEL06VVjEO0NbaHBERmFVThqiJ",
+    },
+    credentials: "include",
+    payload: JSON.stringify(payload),
+  };
+  var response = UrlFetchApp.fetch(url, options);
+  return JSON.parse(response.getContentText()).payload?.result;
+}
+
+function removeAllAppData() {
+  const userProperties = PropertiesService.getUserProperties();
+  userProperties.deleteAllProperties();
+}

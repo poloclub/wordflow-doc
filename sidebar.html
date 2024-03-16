@@ -1,748 +1,462 @@
 <!DOCTYPE html>
 <html>
-  
-  <head>
-    <base target="_top">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-    rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-    crossorigin="anonymous">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"
-    rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-    crossorigin="anonymous">
-    </script>
-  </head>
-  <body class="bg-body">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">Wordflow</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" id="prompting">Prompting</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id = "community">Community</a>
-            </li>
-          </ul>
-        </div>
+   <head>
+      <base target="_top">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+         rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+         crossorigin="anonymous">
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"
+         rel="stylesheet">
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+         crossorigin="anonymous"></script> 
+      <link href="https://cdn.jsdelivr.net/npm/hint.css@3.0.0/hint.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+   </head>
+   <style>
+      .clear-btn {
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      padding: 0;
+      text-align: center;
+      border-color: #CCCCCC;
+      }
+      .clear-btn:hover {
+      color: inherit; 
+      background-color: inherit; 
+      border-color: inherit; 
+      }
+      .accordion-item {
+      border: none; 
+      }
+      .accordion-button {
+      width: 100%; 
+      text-align: left; 
+      border: none; 
+      border-radius: 0; 
+      background-color: transparent; 
+      padding: 1rem 0; 
+      }
+      .accordion-body {
+      border-top: none; 
+      padding: 0; 
+      }
+      .accordion-button:not(.collapsed) {
+      background-color: transparent; 
+      color: #000; 
+      }
+      .accordion-button:focus {
+      box-shadow: none; 
+      }
+      .smaller-height-input {
+      height: 30px;
+      font-size: 13px;
+      }
+      .smaller-label {
+      font-size: 14px; 
+      }
+      .vertical-line {
+      border-left: 1px solid #ccc;
+      height: 37px; 
+      }
+      .fixed-top {
+      position: sticky;
+      top: 0;
+      background-color: white;
+      }
+   </style>
+   <body class="bg-body">
+      <div class="m-3">
+         <div id="error-message-holder" class="fixed-top">
+         </div>
+         <div class="card mb-2">
+            <div class="card-body">
+               <p class="fs-6">Suggestion Actions</p>
+               <div class="d-flex justify-content-center">
+                  <button type="button" id="accept" class="btn btn-primary btn-sm me-1">
+                  <span class="spinner-border spinner-border-sm" id="accept-spinner" style="display: none" aria-hidden="true"></span>
+                  <i id="accept-icon" class="bi bi-check2"></i> Accept
+                  </button>
+                  <button type="button" id="reject" class="btn btn-secondary btn-sm">
+                  <span class="spinner-border spinner-border-sm" id="reject-spinner" style="display: none" aria-hidden="true"></span>
+                  <i class="bi bi-x" id="reject-icon"></i> Reject
+                  </button>
+               </div>
+            </div>
+         </div>
+         <div class="card mb-2">
+            <div class="card-body">
+               <p class="fs-6">Prompting Toolbar</p>
+               <div class="d-flex justify-content-center">
+                  <span class="hint--top" id="tooltip1"> <button type="button" id = "favorite_1" class="btn btn-outline-secondary shadow-sm clear-btn me-1"></button></span>
+                  <span class="hint--top" id="tooltip2"> <button type="button"  id = "favorite_2" class="btn btn-outline-secondary shadow-sm clear-btn me-1"></button></span>
+                  <span class="hint--top" id="tooltip3"> <button type="button"  id = "favorite_3" class="btn btn-outline-secondary shadow-sm clear-btn me-1"></button></span>
+                  <div class="vertical-line mx-1"></div>
+                  <span class="hint--top" aria-label="Prompt Manager"><button type="button" id="promptman_btn" class="btn btn-outline-secondary shadow-sm clear-btn">
+                  <i class="bi bi-house-door-fill"></i></span>
+                  </button>
+               </div>
+            </div>
+         </div>
+         <div class="card mb-2">
+            <div class="card-body">
+               <p class="fs-6">New Private Prompt</p>
+               <form>
+                  <div class="row">
+                     <div class="col-8">
+                        <div class="mb-1">
+                           <label for="formTitle" class="form-label smaller-label text-secondary">Title <span class="text-danger">*</span> </label>
+                           <input class="form-control smaller-height-input" id="formTitle" maxlength="40" required>
+                        </div>
+                     </div>
+                     <div class="col-4">
+                        <div class="mb-1">
+                           <label for="formEmoji" class="form-label smaller-label text-secondary">Icon <span class="text-danger">*</span></label>
+                           <input class="form-control rounded-circle smaller-height-input" id="formEmoji" value="😎" oninput="validateEmoji(this)" style="height: 39px; width: 39px;" required>
+                        </div>
+                     </div>
+                  </div>
+                  <label for="prompt" class="form-label smaller-label text-secondary">Prompt <span class="text-danger">*</span></label>
+                  <textarea class="form-control form-control-sm" placeholder="Ex. Correct spelling mistakes"
+                     id="prompt" rows="3" required></textarea>
+               </form>
+               <div class="accordion" id="advancedSettings">
+                  <div class="accordion-item">
+                     <h2 class="accordion-header accordion-header-sm" style="height: 62px; outline: none;">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                           <p class="fs-6 text-secondary">Advanced Settings</p>
+                        </button>
+                     </h2>
+                     <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#advancedSettings">
+                        <div class="accordion-body">
+                           <label for="temperature" class="form-label smaller-label text-secondary">Temperature <span class="text-danger">*</span></label>
+                           <input class="form-control smaller-height-input" id="temperature" type="number" value="0.2" min="0"
+                              max="1" step="0.1" required>
+                           <label for="parsingOutputPattern" class="form-label smaller-label text-secondary">Output Parsing- Pattern </label>
+                           <input class="form-control smaller-height-input" id="parsingOutputPattern" placeholder="(.*)" required>
+                           <label for="parsingOutputReplacement" class="form-label smaller-label text-secondary">Output Parsing- Replacement </label>
+                           <input class="form-control smaller-height-input" id="parsingOutputReplacement" placeholder="$1" required>
+                           <label for="injectionMode" class="form-label smaller-label text-secondary">Injection Mode</label>
+                           <select id="injectionMode" class="form-select smaller-height-input mb-2">
+                              <option value="replace" selected>Replace input text</option>
+                              <option value="append">Append after input text</option>
+                           </select>
+                           <label for="modelType" class="form-label smaller-label text-secondary">Model Name</label>
+                           <select id="modelType" class="form-select smaller-height-input mb-2">
+                              <option value="gpt3.5-free" selected>
+                                 gpt-3.5 (Free)
+                              </option>
+                              <option value="gpt-3.5-turbo">
+                                 gpt-3.5-turbo
+                              </option>
+                              <option value="gpt-4">
+                                 gpt-4
+                              </option>
+                              <option value="gpt-3.5-turbo-1106">
+                                 gpt-3.5-turbo-1106
+                              </option>
+                              <option value="geminiPro">
+                                 Gemini Pro
+                              </option>
+                           </select>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div>
+                  <button type="button" id="llm-submit" class="btn btn-primary btn-sm">
+                  <span class="spinner-border spinner-border-sm" id="run-spinner" style="display: none" aria-hidden="true"></span>
+                  <i id="run-icon" class="bi bi-caret-right"></i> Run
+                  </button>
+                  <span class="hint--top" aria-label="run prompt"><i class="bi bi-info-circle" style="font-size: 0.75rem; color: #6c757d;"></i></span>
+                  <button type="button" id="save-local-prompt" class="btn btn-primary btn-sm">
+                  <span class="spinner-border spinner-border-sm" id="save-spinner" style="display: none" aria-hidden="true"></span>
+                  <i id="save-icon" class="bi bi-save"></i> Save
+                  </button>
+                  <span class="hint--top" aria-label="save prompt to library"><i class="bi bi-info-circle" style="font-size: 0.75rem; color: #6c757d;"></i></span>
+               </div>
+            </div>
+         </div>
       </div>
-    </nav>
-
-    <div class="m-3">
-      <div id="apikeyerror" class="alert alert-danger" style="display: none"
-      role="alert">
-        You currently do not have your openAI API Key set. To do so, go to Wordflow
-        > API Key Settings, and insert your API Key. Then, refresh this window.
-      </div>
-
-      <div id="community-div" style="display: none">
-        <div class="d-flex justify-content-center">
-          <div id = "community-spinner" class="spinner-border" style="display: none" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
-        </div>
-        <div id="load-hidden-community">
-          <div class="row">
-            <div class="col">
-              <h5 id="num_prompts"></h5>
-            </div>
-            <div class="col">
-              <div class="btn-group" role="group">
-                <button type="button" id="popular_prompts" class="btn active btn-light btn-sm">Popular</button>
-                <button type="button" id="new_prompts" class="btn btn-light btn-sm">New</button>
-              </div>
-            </div>
-          </div>
-          <h6> Popular tags </h6>
-          <div id="popular-tags"> </div>
-          <div id="card-container"> </div>
-          <div id="pages-container" class="my-2 d-flex justify-content-center"> </div>
-        </div>
-      </div>
-
-      <div id = "prompting-div">
-      <div class="modal fade" id="sharingModal" tabindex="-1" aria-labelledby="sharingModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="sharingModalLabel">Share Prompt</h1>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <form class="was-validated">
-              <div class="form-floating mb-3">
-                <input class="form-control" id="modalTitle" required>
-                <label for="modalTitle">Title</label>
-              </div>
-              <div class="form-floating mb-3">
-                <textarea class="form-control" id="modalPrompt" required></textarea>
-                <label for="modalPrompt" class="form-label">Prompt</label>
-              </div>
-              <div class="form-floating mb-3">
-                <input class="form-control" id="modalDescription" required>
-                <label for="modalDescription">Description</label>
-              </div>
-              <div class="form-floating mb-3">
-                <input class="form-control" id="modalTags">
-                <label for="modalTags" class="form-label">Tags</label>
-              </div>
-              <div class="form-floating mb-3">
-                <input class="form-control" id="modalUserName">
-                <label for="modalUserName" class="form-label">Optional Username</label>
-              </div>
-              <label class="form-label">Recommended Models: </label>
-              <div class="row">
-                <div class="col mb-1">
-                  <input type="checkbox" class="form-check-input" id="modal3.5">
-                  <label class="form-check-label" for="modal3.5">GPT 3.5</label>
-                </div>
-                <div class="col mb-1">
-                  <input type="checkbox" class="form-check-input" id="modal4">
-                  <label class="form-check-label" for="modal4">GPT 4</label>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col mb-1">
-                  <input type="checkbox" class="form-check-input" id="palm2">
-                  <label class="form-check-label" for="palm2">Palm 2</label>
-                </div>
-                <div class="col mb-1">
-                  <input type="checkbox" class="form-check-input" id="geminiPro">
-                  <label class="form-check-label" for="geminiPro">Gemini Pro</label>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col mb-1">
-                  <input type="checkbox" class="form-check-input" id="claude1">
-                  <label class="form-check-label" for="claude1">Claude 1</label>
-                </div>
-                <div class="col mb-1">
-                  <input type="checkbox" class="form-check-input" id="claude2">
-                  <label class="form-check-label" for="claude2">Claude 2</label>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col mb-1">
-                  <input type="checkbox" class="form-check-input" id="llama2">
-                  <label class="form-check-label" for="llama2">Llama 2</label>
-                </div>
-              </div>
-              </form>
-
-            </div>
-            <div class="modal-footer">
-              <button type="submit" class="btn btn-primary">Share</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <b>
-        Suggestion Actions
-      </b>
-      <div class="btn-group  bottom-0 start-50 translate-middle-x" role="group"
-      aria-label="Basic example">
-        <button type="button" id="accept" class="btn btn-primary my-1">
-          Accept
-        </button>
-        <button type="button" id="reject" class="btn btn-primary my-1">
-          Reject
-        </button>
-      </div>
-      <div class="accordion" id="accordionExample4">
-        <div class="accordion-item mt-2">
-          <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-            data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-              <b>
-                Favorite Prompts
-              </b>
-            </button>
-          </h2>
-          <div id="collapseFour" class="accordion-collapse collapse">
-            <div class="accordion-body">
-              <div id="favorites-div">
-                <p id="no_favorites" style="display: none; font-size: 14px">
-                  You have no favorite prompts yet!
-                </p>
-                <table style="word-break: break-word; width: 100%; display: table; height: 300px; overflow: auto; " class="table" id="favorites-table">
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <form class="was-validated">
-        <b>
-          Prompt
-        </b>
-        <textarea class="form-control mt-2 form-control-sm" placeholder="Ex. Correct spelling mistakes"
-        id="prompt" rows="5" required></textarea>
-        <input type="checkbox" id="context">
-        <label for="context" style="font-size: 14px">
-          Use selection as context
-        </label>
-        <div class="accordion" id="accordionExample">
-          <div class="accordion-item mt-2">
-            <h2 class="accordion-header">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-              data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                <b>
-                  Insert Settings
-                </b>
-              </button>
-            </h2>
-            <div id="collapseOne" class="accordion-collapse collapse">
-              <div class="accordion-body">
-                <input type="radio" id="cursor" class="form-check-input" name="insert_settings"
-                value="cursor" checked>
-                <label for="cursor" class="form-check-label" style="font-size: 15px">
-                  Insert at cursor/selection
-                </label>
-                <br>
-                <input type="radio" id="end" class="form-check-input" name="insert_settings"
-                value="end">
-                <label for="end" class="form-check-label" style="font-size: 15px">
-                  Insert at end of document
-                </label>
-                <br>
-                <input class="form-check-input" type="checkbox" id="promptdoc">
-                <label class="form-check-label" for="promptdoc" style="font-size: 15px">
-                  Insert prompt in document
-                </label>
-                <br>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="accordion" id="accordionExample2">
-          <div class="accordion-item mt-2">
-            <h2 class="accordion-header">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-              data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                <b>
-                  Model Settings
-                </b>
-              </button>
-            </h2>
-            <div id="collapseTwo" class="accordion-collapse collapse">
-              <div class="accordion-body">
-                <label>
-                  Specialized Behavior:
-                </label>
-                <textarea class="form-control mt-2 form-control-sm" placeholder="Ex. Act as a career advisor"
-                id="specialprompt" rows="3"></textarea>
-                <div class="form-floating mt-1">
-                  <select class="form-select form-select-sm" id="model-select" aria-label="Floating label select example">
-                    <option value="gpt-3.5-turbo">
-                      gpt-3.5-turbo
-                    </option>
-                    <option value="gpt-4">
-                      gpt-4
-                    </option>
-                    <option value="gpt-3.5-turbo-1106">
-                      gpt-3.5-turbo-1106
-                    </option>
-                  </select>
-                  <label for="model-select">
-                    Model Name
-                  </label>
-                </div>
-                <div class="form-floating mt-1">
-                  <input class="form-control" id="temperature" type="number" value="0" min="0"
-                  max="1" step="0.1" required>
-                  <label for="temperature">
-                    Temperature
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="position-relative">
-          <button type="button" id="llm-submit" style="margin: auto;display:block"
-          class="btn btn-primary mt-2 ">
-            Submit
-          </button>
-        </div>
-      </form>
-      <div class="mt-1">
-        <div class="accordion" id="accordionExample3">
-          <div class="accordion-item mt-2">
-            <h2 class="accordion-header">
-              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-              data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                <b>
-                  Prompt History
-                </b>
-              </button>
-            </h2>
-            <div id="collapseThree" class="accordion-collapse collapse">
-              <div class="accordion-body">
-                <button type="button" class="btn btn-outline-primary btn-sm" id="clear-history"
-                style="float: right; margin-left: -50%;">
-                  Clear
-                </button>
-                <div id="history_div" class="mt-5">
-                  <p id="no_history" style="display: none; font-size: 14px">
-                    You have no prompt history yet!
-                  </p>
-                  <table style="word-break: break-word; display: table; height: 300px; overflow: auto; width: 100%;" class="table" id="history_table">
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      </div>
-      
-    </div>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
-    </script>
-    <script>
-      /**
-       * On document load, assign click handlers to each button and try to load the
-       * user's origin and destination language preferences if previously set.
-       */
-      $(function() {
-        $('#llm-submit').click(runLLM);
-        $('#accept').click(acceptSuggestions);
-        $('#reject').click(rejectSuggestions);
-        $('#clear-history').click(clearPromptHistory);
-        $('#prompting').click(pagePrompting);
-        $('#community').click(pageCommunity);
-        $('#popular_prompts').click(updatePopular);
-        $('#new_prompts').click(updateNew);
-
-        google.script.run.withSuccessHandler(function(obj) {
-          if (!obj.openAIAPIKey) {
-            $("#apikeyerror").show();
-            $('#llm-submit').attr('disabled', 'disabled');
-          }
-        }).getAPIKey();
-
-        $("#no_history").show();
-
-        google.script.run.withSuccessHandler(function(favorites) {
-          if (favorites.length == 0) {
-            $("#no_favorites").show();
-          } else {
-            for (var j = 0; j < favorites.length; j++) {
-              addToTableFavoriteOnly(favorites[j]);
-            }
-          }
-        }).getFavorites();
-
-
-        //document.querySelector("html").setAttribute("data-bs-theme", "dark");
-      })
-
-      function updatePopular() {
-        $("#popular_prompts").attr("class", "btn active btn-light btn-sm");
-        $("#new_prompts").attr("class",  "btn btn-light btn-sm");
-        $('#card-container').empty();
-        $("#pages-container").empty();
-        loadPagePopularElements();
-      }
-
-      function updateNew() {
-        $("#popular_prompts").attr("class", "btn btn-light btn-sm");
-        $("#new_prompts").attr("class",  "btn active btn-light btn-sm");
-        $('#card-container').empty();
-        $("#pages-container").empty();
-        loadPageNewElements();
-      }
-
-      function pagePrompting() {
-        $("#prompting").attr("class", "nav-link active");
-        $('#community').attr("class", "nav-link");
-        $("#community-div").hide();
-        $("#prompting-div").show();
-      }
-
-      function pageCommunity() {
-        $("#community").attr("class", "nav-link active");
-        $('#prompting').attr("class", "nav-link");
-        $("#prompting-div").hide();
-        updatePopular();
-        $("#community-div").show();
-      }
-
-      function loadPagePopularElements() {
-        $("#community-spinner").show();
-        $("#load-hidden-community").hide();
-        google.script.run.withSuccessHandler(function(popular) {
-          google.script.run.withSuccessHandler(function(tags) {
-            $('#num_prompts').text(popular.length + " prompts");
-            createPaginatedCards(popular);
-            createTagElements(tags, true);
-            $("#community-spinner").hide();
-            $("#load-hidden-community").show();
-         }).getPopularTags();
-        }).getMostPopular();
-      }
-
-      function loadPageNewElements() {
-        $("#community-spinner").show();
-        $("#load-hidden-community").hide();
-        google.script.run.withSuccessHandler(function(recents) {
-          google.script.run.withSuccessHandler(function(tags) {
-            $('#num_prompts').text(recents.length + " prompts");
-            createPaginatedCards(recents);
-            createTagElements(tags, false);
-            $("#community-spinner").hide();
-            $("#load-hidden-community").show();
-          }).getPopularTags();
-        }).getMostRecent();
-      }
-
-      function createPaginatedCards(arr) {
-        /* for (var i = 0; i < arr.length; i++) {
-            var elem = arr[i];
-            createInfoCard(elem.prompt, elem.tags, elem.temperature, elem.userName, elem.description, elem.icon, elem.promptRunCount, elem.title, elem.recommendedModels, elem.injectionMode, elem.created);
-        } */
-        var cardsPerPage = 5;
-        var totalPages = Math.ceil(arr.length / cardsPerPage);
-        var paginationContainer = $('<div>').addClass('pagination-container').css({
-            'overflow-x': 'auto', 
-            'white-space': 'nowrap'
-        });
-        var pagination = $('<ul>').addClass('pagination pagination-sm');
-        for (var page = 0; page < totalPages; page++) {
-            (function (currentPage) {
-                var listItem = $('<li>').addClass('page-item');
-                if (page == 0) {
-                  listItem.addClass('active');
-                }
-                var linkElement = $('<a>').addClass('page-link').text(currentPage + 1);
-                listItem.append(linkElement);
-                linkElement.on('click', function () {
-                  pagination.find('.page-item').removeClass('active');
-                  listItem.addClass('active');
-                    $('#card-container').empty();
-                    var startIndex = currentPage * cardsPerPage;
-                    var endIndex = Math.min(startIndex + cardsPerPage, arr.length);
-
-                    for (var j = startIndex; j < endIndex; j++) {
-                        var elem = arr[j];
-                        createInfoCard(elem.prompt, elem.tags, elem.temperature, elem.userName, elem.description, elem.icon, elem.promptRunCount, elem.title, elem.recommendedModels, elem.injectionMode, elem.created, pagination);
-                    }
-                });
-                pagination.append(listItem);
-            })(page);
-        }
-        //Initialize starting page
-        for (var s = 0; s < Math.min(cardsPerPage, arr.length); s++) {
-          var elem = arr[s];
-          createInfoCard(elem.prompt, elem.tags, elem.temperature, elem.userName, elem.description, elem.icon, elem.promptRunCount, elem.title, elem.recommendedModels, elem.injectionMode, elem.created, pagination);
-        }
-        paginationContainer.append(pagination);
-        $("#pages-container").append(paginationContainer);
-
-      }
-
-      function createTagElements(tags, popular) {
-        var popularTagsDiv = $("#popular-tags");
-        popularTagsDiv.empty();
-
-        tags.forEach(function(tagP) {
-          if (tagP.tag) {
-            var tagElement = $("<span>").addClass("badge text-bg-secondary me-1").text(tagP.tag);
-            popularTagsDiv.append(tagElement);
-            tagElement.on('click', function() {
-                $("#community-spinner").show();
-                $("#load-hidden-community").hide();
-                $('#card-container').empty();
-                $("#pages-container").empty();
-                if (!popular) {
-                  google.script.run.withSuccessHandler(function(recents) {
-                      $('#num_prompts').text(recents.length + " prompts");
-                      createPaginatedCards(recents);
-                      $("#community-spinner").hide();
-                      $("#load-hidden-community").show();
-                  }).getMostRecent(tagP.tag);
-                } else {
-                  google.script.run.withSuccessHandler(function(popular) {
-                      $('#num_prompts').text(popular.length + " prompts");
-                      createPaginatedCards(popular);
-                      $("#community-spinner").hide();
-                      $("#load-hidden-community").show();
-                  }).getMostPopular(tagP.tag);
-                }
-            });
-          }
-        });
-      }
-
-      function createInfoCard(prompt, tags, temperature, userName, description, icon, promptRunCount, title, recommendedModels, injectionMode, dateCreated) {
-        dateCreated = new Date(dateCreated);
-        dateCreated = dateCreated.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-        if (!userName) {
-            userName = "Anonymous";
-        }
-
-        var cardHolderDiv = $('<div>').addClass('card-holder-div mt-3');
-        var card = $('<div>').addClass('card collapsed');
-        var cardBody = $('<div>').addClass('card-body');
-
-        var cardTitle = $('<h5>').addClass('card-title').text(title);
-        var cardSubtitle = $('<h6>').addClass('card-subtitle mb-2 text-body-secondary').text(userName + ' | ' + dateCreated + ' | ' + promptRunCount + ' runs');
-        var descriptionHeading = $('<b>').addClass('card-text').text('Description');
-        var descriptionText = $('<p>').text(description);
-
-        var hiddenDiv = $('<div>').addClass('d-none');
-        var promptHeading = $('<b>').addClass('card-text').text('Prompt');
-        var promptText = $('<p>').text(prompt);
-        var tagsHeading = $('<b>').addClass('card-text').text('Tags');
-        var tagDiv = $('<div>');
-        for (var i = 0; i < tags.length; i++) {
-            var badge = $('<span>').addClass('badge text-bg-secondary me-1').text(tags[i]);
-            tagDiv.append(badge);
-        }
-
-        var moreInfoHeading = $('<b>').addClass('card-text').text('More Info');
-        var injectionModeText = $('<p>').css({ 'font-size': '13px', 'margin-bottom': '0', 'padding-bottom': '0' }).text('Injection mode: ' + injectionMode);
-        recommendedModels = recommendedModels.length > 0 ? recommendedModels.join(', ') : "N/A";
-        var modelsText = $('<p>').css({ 'font-size': '13px', 'margin-bottom': '0', 'padding-bottom': '0' }).text('Models: ' + recommendedModels);
-
-        hiddenDiv.append(promptHeading, promptText, tagsHeading, tagDiv, moreInfoHeading, injectionModeText, modelsText);
-
-        expandButton = $('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708m0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708"/></svg>');
-
-        expandButton.on('click', function () {
-            card.toggleClass('expanded'); 
-            hiddenDiv.toggleClass('d-none'); 
-        }); 
-
-        // positioning elements
-        var expandBtnContainer = $('<div>').addClass('text-end');
-        expandBtnContainer.append(expandButton);
-
-        cardBody.append(cardTitle, cardSubtitle, descriptionHeading, descriptionText, hiddenDiv, expandBtnContainer);
-        card.append(cardBody);
-        cardHolderDiv.append(card);
-
-        $('#card-container').append(cardHolderDiv);
-      }
-
-      /** 
-       * Adds new entry to favorites table
-       * @param The new prompt to add to the favorites table
-      */
-      function addToTableFavoriteOnly(prompt) {
-        var table = $('#favorites-table');
-        var row = $('<tr>', {
-          "prompt": prompt
-        });
-        var cell = $('<td>', {
-          text: prompt
-        });
-        row.append(cell);
-        var cellButton = $('<td>');
-        cellButton.attr("style", "text-align: right;");
-        var className = 'heart fa fa-heart';
-        var favorite = $('<i>', {
-          class: className
-        });
-        row.click(function() {
-          $('#prompt').val(prompt);
-        });
-        favorite.click(function(event) {
-          event.stopPropagation();
-          $(this).attr("class", "heart fa fa-heart-o");
-          removeFromFavorites(this, prompt);
-        });
-        var shareImg = $('<svg class="ms-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16"> <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/></svg>');
-        
-        shareImg.on('click', 
-        function(event) {
-          event.stopPropagation();
-          $('#sharingModal').modal('show'); 
-        });
-        cellButton.append(favorite);
-        cellButton.append(shareImg);
-        row.append(cellButton);
-        row.css('font-size', '12px');
-        table.append(row);
-      }
-
-      /**
-       * Adds new entry to history table
-       * 
-       * @param pre Boolean representing whether to add the entry to the beginning of the table or at the end 
-       * @param fav Boolean representing whether to add the entry to the favorites table as well
-       * */
-      function addToTable(prompt, pre, fav) {
-        var table = $('#history_table');
-        var row = $('<tr>', {
-          "prompt": prompt, 
-        });
-        var cell = $('<td>', {
-          text: prompt
-        });
-        row.append(cell);
-        var cellButton = $('<td>');
-        cellButton.attr("style", "text-align: right;");
-        var className = fav ? 'heart fa fa-heart': 'heart fa fa-heart-o';
-        var favorite = $('<i>', {
-          class: className
-        });
-        row.click(function() {
-          $('#prompt').val(prompt);
-        });
-        favorite.on('click',
-        function(event) {
-          event.stopPropagation();
-          $(this).toggleClass("fa-heart fa-heart-o");
-          var isFavorite = $(this).hasClass('fa-heart');
-          var favoriteButton = $(this);
-          if (isFavorite) {
-            google.script.run.withSuccessHandler(function() {
-              $("#no_favorites").hide();
-              cloneToTableFavorite(favoriteButton, prompt);
-            }).addFavorite(prompt);
-          } else {
-            google.script.run.withSuccessHandler(function() {
-              $('#favorites-table tr[prompt="' + prompt + '"]:first').remove();
-              if ($('#favorites-table tbody tr').length == 0) {
-                $("#no_favorites").show();
-              }
-            }).removeFavorite(prompt);
-          }
-        });
-        var shareImg = $('<svg class="ms-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16"> <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/></svg>');
-
-        shareImg.on('click', 
-        function(event) {
-          event.stopPropagation();
-          $('#sharingModal').modal('show'); 
-        });
-        cellButton.append(favorite);
-        cellButton.append(shareImg);
-        row.append(cellButton);
-        if (pre) {
-          table.prepend(row);
-        } else {
-          table.append(row);
-        }
-        if (fav) {
-          cloneToTableFavorite(favorite, prompt);
-        }
-        table.css('font-size', '12px');
-      }
-
-      /**
-       * Clones row in history table and adds it to favorites table
-       * 
-       * @param button The button in a row to clone in the history table
-       * @param prompt The prompt in relation to the inputted button
-       * */
-      function cloneToTableFavorite(button, prompt) {
-        var listItem = $(button).closest('tr');
-
-        var clonedItem = listItem.clone();
-
-        clonedItem.click(function() {
-          $('#prompt').val(prompt);
-        });
-
-        clonedItem.find('i').click(function(event) {
-          event.stopPropagation();
-          $(button).attr("class", "heart fa fa-heart-o");
-          removeFromFavorites(this, prompt);
-        });
-        
-        clonedItem.find('svg').click(function(event) {
-          event.stopPropagation();
-          $('#sharingModal').modal('show'); 
-        });
-
-        // Add the cloned item to the favorites list
-        clonedItem.css('font-size', '12px');
-        $('#favorites-table').append(clonedItem);
-
-      }
-
-      /** 
-       * Removes a row from the favorites table, and removes a favorite from storage
-       * 
-       * @param button The button corresponding to the row to remove
-       * @param prompt The prompt to remove from favorites
-       * */
-      function removeFromFavorites(button, prompt) {
-        google.script.run.withSuccessHandler(function() {
-          $(button).closest('tr').remove();
-          if ($('#favorites-table tbody tr').length == 0) {
-            $("#no_favorites").show();
-          }
-        }).removeFavorite(prompt);
-      }
-
-      /**
-       * Clears prompt history table
-       * */
-      function clearPromptHistory() {
-        $('#history_table').empty();
-        $("#no_history").show();
-      }
-
-      /** 
-       * Calls method to get openAI API output based on inputted input
-       * */
-      function runLLM() {
-        google.script.run.withSuccessHandler(function(obj) {
-          if (!obj.openAIAPIKey) {
-            $("#apikeyerror").show();
-            $('#llm-submit').attr('disabled', 'disabled');
-          }
-        }).getAPIKey();
-
-        $('#llm-submit').attr('disabled', 'disabled');
-        var useSelection = $('#context').prop('checked');
-        var insertLocation = $('input[name="insert_settings"]').filter(":checked").val();
-        var insertPrompt = $('#promptdoc').prop('checked');
-        var specializedPrompt = $('#specialprompt').val();
-        var inputtedPrompt = $('#prompt').val();
-        google.script.run.withSuccessHandler(function() {
-          if (inputtedPrompt) {
-            $("#no_history").hide();
-            addToTable(inputtedPrompt, true, false);
-          }
-          $('#llm-submit').removeAttr('disabled');
-        }).withFailureHandler(function() {
-          $('#llm-submit').removeAttr('disabled');
-        }).generateIdeas(inputtedPrompt, $('#model-select').val(), parseFloat($('#temperature').val()), useSelection, insertLocation, insertPrompt, specializedPrompt);
-      }
-
-      /**
-       * Accepts text suggestions within selected portion of Google Document
-       * */
-      function acceptSuggestions() {
-        $('#accept').attr('disabled', 'disabled');
-        google.script.run.withSuccessHandler(function() {
-          $('#accept').removeAttr('disabled');
-        }).withFailureHandler(function() {
-          $('#accept').removeAttr('disabled');
-        }).acceptSuggested();
-      }
-
-      /** 
-       * Rejects text suggestions within selected portion of Google document
-       * */
-      function rejectSuggestions() {
-        $('#reject').attr('disabled', 'disabled');
-        google.script.run.withSuccessHandler(function() {
-          $('#reject').removeAttr('disabled');
-        }).withFailureHandler(function() {
-          $('#reject').removeAttr('disabled');
-        }).rejectSuggested();
-      }
-    </script>
-  </body>
-
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"> </script>
+      <script>
+         /**
+          * On document load, assign click handlers to each button and try to load the
+          * user's origin and destination language preferences if previously set.
+          */
+         $(function() {
+           $('#promptman_btn').click(displayPromptManager);
+           $('#accept').click(acceptSuggestions);
+           $('#reject').click(rejectSuggestions);
+           $('#llm-submit').click(runLLM);
+           $('#save-local-prompt').click(saveLocalPrompt);
+           initializePromptToolBar();
+           $(window).on('storage', function(event) {
+               if (event.originalEvent.key === 'favorites') {
+                   initializePromptToolBar();
+               }
+           });
+         })
+         
+         function saveLocalPrompt() {
+             beginLoading("save-local-prompt", "save-spinner", "save-icon");
+             var title = $('#formTitle').val();
+             var emoji = $('#formEmoji').val();
+             var prompt = $('#prompt').val();
+             var temperature = $('#temperature').val();
+             var parsingOutputPattern = $('#parsingOutputPattern').val();
+             var parsingOutputReplacement = $('#parsingOutputReplacement').val();
+             var injectionMode = $('#injectionMode').val();
+             var modelType = $("#modelType").val();
+         
+             if (!title || !emoji || !prompt || !temperature) {
+               showErrorMessage("Please fill in all required fields to save prompt!");
+               endLoading("save-local-prompt", "save-spinner", "save-icon");
+               return;
+             }
+         
+             temperature = parseFloat(temperature);
+         
+             google.script.run.withSuccessHandler(function(arrU) {
+               uiud = arrU[0];
+               userId = arrU[1];
+                 var finalInfo = {
+                     "prompt": prompt,
+                     "tags": [],
+                     "temperature": temperature,
+                     "userID": userId,
+                     "userName": "",
+                     "description": "",
+                     "icon": emoji,
+                     "forkFrom": "",
+                     "promptRunCount": 0,
+                     "created": new Date().toISOString(),
+                     "title": title,
+                     "outputParsingPattern": parsingOutputPattern,
+                     "outputParsingReplacement": parsingOutputReplacement,
+                     "recommendedModels": [],
+                     "injectionMode": injectionMode
+                 };
+                 google.script.run.withSuccessHandler(function() {
+                     endLoading("save-local-prompt", "save-spinner", "save-icon");
+                 }).withFailureHandler(function() {
+                    showErrorMessage("Failed to save prompt. Please try again.")
+                    endLoading("save-local-prompt", "save-spinner", "save-icon");
+                 }).addPrompt(uiud, finalInfo);
+             }).getUiudAndUserId();
+         }
+         
+         
+         function initializePromptToolBar() {
+           google.script.run.withSuccessHandler(function(out) {
+             favorites = out[0];
+             localPrompts = out[1];
+             
+             if(favorites[0]) {
+               $('#favorite_1').removeAttr('disabled');
+               $("#favorite_1").text(localPrompts[favorites[0]].icon);
+               $("#tooltip1").attr("aria-label", localPrompts[favorites[0]].title);
+               $("#favorite_1").off("click");
+               var fav1 = localPrompts[favorites[0]];
+               $("#favorite_1").click(function() {
+                 beginLoadingToolbar("favorite_1");
+                 google.script.run.withSuccessHandler(function(prefModel) {
+                   google.script.run.withSuccessHandler(function() {
+                     endLoadingToolbar("favorite_1", localPrompts[favorites[0]].icon);
+                     google.script.run.addPromptRun(favorites[0]);
+                   }).withFailureHandler(function() {
+                     showErrorMessage("Could not get output. Please check settings to validate the preferred model and API Key.");
+                     endLoadingToolbar("favorite_1", localPrompts[favorites[0]].icon);
+                   }).generateIdeas(fav1.title, fav1.icon, fav1.prompt, fav1.temperature, fav1.outputParsingPattern, fav1.outputParsingReplacement, fav1.injectionMode, prefModel); 
+                 }).withFailureHandler(function(){
+                   showErrorMessage("Error. Please try again.");
+                 }).getPrefModel();
+             });
+             } else {
+               $("#favorite_1").empty();
+               $("#favorite_1").off("click");
+               $('#favorite_1').attr('disabled', 'disabled');
+               $("#tooltip1").attr("aria-label", "");
+             } 
+         
+             if (favorites[1]) {
+               $('#favorite_2').removeAttr('disabled');
+               $("#favorite_2").text(localPrompts[favorites[1]].icon);
+               $("#tooltip2").attr("aria-label", localPrompts[favorites[1]].title);
+               $("#favorite_2").off("click");
+               var fav2 = localPrompts[favorites[1]];
+               $("#favorite_2").click(function() {
+                 beginLoadingToolbar("favorite_2");
+                 google.script.run.withSuccessHandler(function(prefModel) {
+                   google.script.run.withSuccessHandler(function() {
+                   endLoadingToolbar("favorite_2", localPrompts[favorites[1]].icon);
+                   google.script.run.addPromptRun(favorites[1]); 
+                 }).withFailureHandler(function() {
+                   showErrorMessage("Could not get output. Please check settings to validate the preferred model and API Key.");
+                   endLoadingToolbar("favorite_2", localPrompts[favorites[1]].icon);
+                 }).generateIdeas(fav2.title, fav2.icon, fav2.prompt, fav2.temperature, fav2.outputParsingPattern, fav2.outputParsingReplacement, fav2.injectionMode, prefModel);
+                 }).withFailureHandler(function(){
+                   showErrorMessage("Error. Please try again.");
+                 }).getPrefModel();
+               });
+             } else {
+               $("#favorite_2").empty();
+               $("#favorite_2").off("click");
+               $('#favorite_2').attr('disabled', 'disabled');
+               $("#tooltip2").attr("aria-label", "");
+             }
+         
+             if (favorites[2]) {
+               $('#favorite_3').removeAttr('disabled');
+              $("#favorite_3").text(localPrompts[favorites[2]].icon);
+              $("#tooltip3").attr("aria-label", localPrompts[favorites[2]].title);
+              var fav3 = localPrompts[favorites[2]];
+              $("#favorite_3").off("click");
+              $("#favorite_3").click(function() {
+               beginLoadingToolbar("favorite_3");
+               google.script.run.withSuccessHandler(function(prefModel) {
+                 google.script.run.withSuccessHandler(function() {
+                   endLoadingToolbar("favorite_3", localPrompts[favorites[2]].icon);
+                   google.script.run.addPromptRun(favorites[2]);
+               }).withFailureHandler(function() {
+                 showErrorMessage("Could not get output. Please check settings to validate the preferred model and API Key.");
+                 endLoadingToolbar("favorite_3", localPrompts[favorites[2]].icon);
+               }).generateIdeas(fav3.title, fav3.icon, fav3.prompt, fav3.temperature, fav3.outputParsingPattern, fav3.outputParsingReplacement, fav3.injectionMode, prefModel); 
+         
+               }).withFailureHandler(function(){
+                   showErrorMessage("Error. Please try again.");
+                 }).getPrefModel();
+             });
+             } else {
+               $("#favorite_3").empty();
+               $("#favorite_3").off("click");
+               $('#favorite_3').attr('disabled', 'disabled');
+               $("#tooltip3").attr("aria-label", "");
+               
+             } 
+         
+           }).withFailureHandler(function(favorites) {
+           }).getFavoritesForToolbar();
+         
+         }
+         
+         function runLLM() {
+           beginLoading("llm-submit", "run-spinner", "run-icon");
+         
+           var title = $('#formTitle').val();
+           var emoji = $('#formEmoji').val();
+           var prompt = $('#prompt').val();
+           var temperature = $('#temperature').val();
+           var parsingOutputPattern = $('#parsingOutputPattern').val();
+           var parsingOutputReplacement = $('#parsingOutputReplacement').val();
+           var injectionMode = $('#injectionMode').val();
+           var modelType = $("#modelType").val();
+         
+           if (!title || !emoji || !prompt || !temperature) {
+             showErrorMessage("Please fill in all required fields to run prompt!");
+             //$('#llm-submit').removeAttr('disabled');
+             endLoading("llm-submit", "run-spinner", "run-icon");
+             return;
+           }
+           temperature = parseFloat(temperature);
+         
+           google.script.run.withSuccessHandler(function() {
+             endLoading("llm-submit", "run-spinner", "run-icon");
+           }).withFailureHandler(function() {
+             endLoading("llm-submit", "run-spinner", "run-icon");
+             showErrorMessage("Could not get output. Please try again.")
+           }).generateIdeas(title, emoji, prompt, temperature, parsingOutputPattern, parsingOutputReplacement, injectionMode, modelType); 
+         }
+         
+         function showErrorMessage(message) {
+           const alertPlaceholder = $('#error-message-holder');
+           const alert = $(
+             `<div class="alert alert-danger d-flex align-items-center justify-content-between" style="font-size: 14px; border-radius: 8px; padding: 6px; color: #c62828; background-color: #ffebee;" role="alert">
+               <i class="bi bi-x-circle" style="font-size: 1.2em; margin-right: 5px;"></i>
+               <span>${message}</span>
+               <div class="d-flex align-items-center">
+                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+               </div>
+             </div>`
+           );
+           alertPlaceholder.append(alert);
+           setTimeout(function() {
+             alert.fadeOut(function() {
+                 $(this).remove(); // Remove the alert from the DOM after fading out
+             });
+         }, 5000);
+         }
+         
+         function displayPromptManager() {
+           google.script.run.showPromptManager();
+         }
+         
+         /**
+          * Accepts text suggestions within selected portion of Google Document
+          * */
+         function acceptSuggestions() {
+           beginLoading("accept", "accept-spinner", "accept-icon");
+           google.script.run.withSuccessHandler(function() {
+             endLoading("accept", "accept-spinner", "accept-icon");
+           }).withFailureHandler(function() {
+             showErrorMessage("Error. Please try again!")
+             endLoading("accept", "accept-spinner", "accept-icon");
+           }).acceptSuggested();
+         }
+         
+         /** 
+          * Rejects text suggestions within selected portion of Google document
+          * */
+         function rejectSuggestions() {
+           beginLoading("reject", "reject-spinner", "reject-icon");
+           google.script.run.withSuccessHandler(function() {
+             endLoading("reject", "reject-spinner", "reject-icon");
+           }).withFailureHandler(function() {
+             showErrorMessage("Error. Please try again!")
+             endLoading("reject", "reject-spinner", "reject-icon");
+           }).rejectSuggested();
+         }
+         
+         function validateEmoji(input) {
+           let value = input.value;
+           let unicodeLength = Array.from(value).length;
+           const emojiRegex = /^\p{Emoji}/u;
+           const matches = value.match(emojiRegex);
+           if (!matches) {
+             input.value = value.charAt(0);
+           } else {
+             input.value = matches[0];
+           }
+         }
+         
+         function beginLoading(buttonId, loadingId, iconId) {
+           $("#"+loadingId).show();
+           $("#"+buttonId).attr('disabled', 'disabled');
+           if (iconId) {
+             $("#"+iconId).hide();
+           }
+         }
+         
+         function endLoading(buttonId, loadingId, iconId) {
+           $("#"+loadingId).hide();
+           $("#"+buttonId).removeAttr('disabled');
+           if (iconId) {
+             $("#"+iconId).show();
+           }
+         }
+         
+         function beginLoadingToolbar(buttonId) {
+           var loadingElement = $('<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>');
+           $("#" + buttonId).empty();
+           $("#" + buttonId).append(loadingElement);
+           $("#" + buttonId).attr('disabled', 'disabled');
+         }
+         
+         function endLoadingToolbar(buttonId, icon) {
+           $("#"+buttonId).text(icon);
+           $("#"+buttonId).removeAttr('disabled');
+         }
+      </script>
+   </body>
 </html>

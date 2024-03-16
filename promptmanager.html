@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <base target="_top">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+         rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+         crossorigin="anonymous">
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"
+         rel="stylesheet">
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+         crossorigin="anonymous"></script> 
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+   </head>
+   <style>
+      .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      }
+      .card-holder-div {
+      width: calc(50% - 10px); 
+      margin: 5px;
+      }
+      .clear-btn {
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      padding: 0;
+      text-align: center;
+      border-color: #CCCCCC;
+      }
+      .clear-btn:hover {
+      color: inherit; 
+      background-color: inherit; 
+      border-color: inherit; 
+      }
+      .accordion-item {
+      border: none; 
+      }
+      .accordion-button {
+      width: 100%; 
+      text-align: left; 
+      border: none; 
+      border-radius: 0; 
+      background-color: transparent; 
+      padding: 1rem 0; 
+      }
+      .accordion-body {
+      border-top: none; 
+      padding: 0; 
+      }
+      .accordion-button:not(.collapsed) {
+      background-color: transparent; 
+      color: #000; 
+      }
+      .accordion-button:focus {
+      box-shadow: none; 
+      }
+      .smaller-height-input {
+      height: 30px;
+      font-size: 13px;
+      }
+      .smaller-height {
+      height: 20px;
+      }
+      .smaller-label {
+      font-size: 14px; 
+      }
+      .vertical-line {
+      border-left: 1px solid #ccc;
+      height: 37px; 
+      }
+      .custom-nav-link {
+      color: #6c757d; 
+      background-color: transparent; 
+      border: none; 
+      padding: 0.5rem 1rem; 
+      }
+      .custom-nav-link.active,
+      .custom-nav-link:hover {
+      color: #6c757d !important;
+      background-color: #f8f9fa !important; 
+      outline: none; 
+      }
+      .custom-nav-link.active:focus {
+      box-shadow: none; 
+      }
+      .badge-blue {
+      background-color: #bcdffb;
+      color: #154DA3;
+      font-weight: normal 
+      }
+      .badge-grey {
+      font-weight: normal 
+      }
+      .card-text-over {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3; 
+      -webkit-box-orient: vertical;
+      }
+      .title-text-over {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      }
+      .fixed-top {
+      position: sticky;
+      top: 0;
+      background-color: white;
+      }
+      .row {
+      margin: 0;
+      }
+      .badge:hover {
+      cursor: pointer; 
+      }
+      .modal-open .modal-backdrop {
+      background-color: rgb(255,255,255);
+      opacity: 0.5 !important;
+      }
+      .card-footer {
+      background: transparent;
+      border-top: 0px;
+      }
+      .circle {
+      width: 30px; 
+      height: 30px; 
+      border-radius: 50%; 
+      border: 1px solid #CCCCCC;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      }
+      .footer {
+      position: sticky;
+      bottom: 0;
+      width: 100%;
+      padding: 20px 0;
+      background-color: white;
+      }
+   </style>
+   <body class="bg-body">
+      <div class="m-1">
+         <div class="d-flex align-items-start">
+            <div class="nav flex-column nav-pills me-3 fixed-top" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+               <button class="nav-link active custom-nav-link" id="private-prompts-page" data-bs-toggle="pill" data-bs-target="#v-pills-personalprompts" type="button" role="tab" aria-controls="v-pills-personalprompts" aria-selected="true">My Prompts</button>
+               <button class="nav-link custom-nav-link" id="community-prompts-page" data-bs-toggle="pill" data-bs-target="#v-pills-community" type="button" role="tab" aria-controls="v-pills-community" aria-selected="false">Community</button>
+               <button class="nav-link custom-nav-link" id="settings-page" data-bs-toggle="pill" data-bs-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings" aria-selected="false">Settings</button>
+            </div>
+            <div class="tab-content" style="width: 100%; height: 100%" id="v-pills-tabContent">
+               <div class="tab-pane fade show active" id="v-pills-personalprompts" role="tabpanel" aria-labelledby="private-prompts-page" tabindex="0">
+                  <div class="modal fade" id="personalPromptModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                     <div class="modal-dialog">
+                        <div class="modal-content">
+                           <div class="modal-header">
+                              <div id="personalExpandModalTitle"></div>
+                              <div id="modal-error-message-holder"></div>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                           </div>
+                           <div class="modal-body">
+                              <div class="mbe-2" style="display: inline-block; width: 85%">
+                                 <label for="formTitle" class="form-label smaller-label text-secondary">Title <span class="text-danger">*</span> </label>
+                                 <input class="form-control smaller-height-input" id="formTitle" maxlength="40" required>
+                              </div>
+                              <div class="mb-1" style="display: inline-block;">
+                                 <label for="formEmoji" class="form-label smaller-label text-secondary">Icon <span class="text-danger">*</span></label>
+                                 <input class="form-control rounded-circle smaller-height-input" id="formEmoji" value="😎" oninput="validateEmoji(this)" style="height: 39px; width: 39px;" required>
+                              </div>
+                              <label for="prompt" class="form-label smaller-label text-secondary">Prompt <span class="text-danger">*</span></label>
+                              <textarea class="form-control form-control-sm" placeholder="Ex. Correct spelling mistakes"
+                                 id="prompt" rows="3" required></textarea>
+                              </form>
+                              <div class="accordion" id="accordionAdvancedSettingsParent">
+                                 <div class="accordion-item">
+                                    <h2 class="accordion-header accordion-header-sm" style="height: 62px; outline: none;">
+                                       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accordionAdvancedSettings" aria-expanded="false" aria-controls="accordionAdvancedSettings">
+                                          <p class="fs-6 text-secondary">Advanced Settings</p>
+                                       </button>
+                                    </h2>
+                                    <div id="accordionAdvancedSettings" class="accordion-collapse collapse" data-bs-parent="#accordionAdvancedSettingsParent">
+                                       <div class="accordion-body">
+                                          <label for="temperature" class="form-label smaller-label text-secondary">Temperature <span class="text-danger">*</span></label>
+                                          <input class="form-control smaller-height-input" id="temperature" type="number" value="0.2" min="0"
+                                             max="1" step="0.1" required>
+                                          <label for="parsingOutputPattern" class="form-label smaller-label text-secondary">Output Parsing- Pattern </label>
+                                          <input class="form-control smaller-height-input" id="parsingOutputPattern" placeholder="(.*)" required>
+                                          <label for="parsingOutputReplacement" class="form-label smaller-label text-secondary">Output Parsing- Replacement </label>
+                                          <input class="form-control smaller-height-input" id="parsingOutputReplacement" placeholder="$1" required>
+                                          <label for="injectionMode" class="form-label smaller-label text-secondary">Injection Mode</label>
+                                          <select id="injectionMode" class="form-select smaller-height-input mb-2">
+                                             <option value="replace" selected>Replace input text</option>
+                                             <option value="append">Append after input text</option>
+                                          </select>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="accordion" id="accordionSharingParent">
+                                 <div class="accordion-item">
+                                    <h2 class="accordion-header accordion-header-sm" style="height: 62px; outline: none;">
+                                       <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#accordionSharing" aria-expanded="false" aria-controls="accordionSharing">
+                                          <p class="fs-6 text-secondary">Sharing Settings</p>
+                                       </button>
+                                    </h2>
+                                    <div id="accordionSharing" class="accordion-collapse collapse" data-bs-parent="#accordionSharingParent">
+                                       <div class="accordion-body">
+                                          <label for="description" class="form-label smaller-label text-secondary">Description <span class="text-danger">*</span></label>
+                                          <textarea class="form-control form-control-sm" placeholder="Ex. Correct spelling mistakes"
+                                             id="description" rows="3" required></textarea>
+                                          <label for="tags" class="form-label smaller-label text-secondary">Tags </label>
+                                          <input class="form-control smaller-height-input" id="tags" placeholder="shorten, summary" required>
+                                          <label for="username" class="form-label smaller-label text-secondary">Optional Username </label>
+                                          <input class="form-control smaller-height-input" id="username" placeholder="">
+                                          <label  class="form-label smaller-label text-secondary">Recommended Models: </label>
+                                          <div class="row">
+                                             <div class="col">
+                                                <input type="checkbox" value="gpt-3.5" class="form-check-input" name="suggestedModelsModal" id="gpt-3.5">
+                                                <label  class="form-label smaller-label text-secondary" for="modal3.5">GPT 3.5</label>
+                                             </div>
+                                             <div class="col">
+                                                <input type="checkbox" value="gpt-4" class="form-check-input" name="suggestedModelsModal" id="gpt-4">
+                                                <label  class="form-label smaller-label text-secondary" for="modal4">GPT 4</label>
+                                             </div>
+                                             <div class="col">
+                                                <input type="checkbox" value="palm-2" class="form-check-input" name="suggestedModelsModal" id="palm-2">
+                                                <label  class="form-label smaller-label text-secondary" for="palm2">Palm 2</label>
+                                             </div>
+                                             <div class="col">
+                                                <input type="checkbox" value="gemini-pro" class="form-check-input" name="suggestedModelsModal" id="gemini-Pro">
+                                                <label  class="form-label smaller-label text-secondary" for="geminiPro">Gemini Pro</label>
+                                             </div>
+                                          </div>
+                                          <div class="row">
+                                             <div class="col-3">
+                                                <input type="checkbox" value="claude-1" class="form-check-input" name="suggestedModelsModal" id="claude-1">
+                                                <label  class="form-label smaller-label text-secondary" for="claude1">Claude 1</label>
+                                             </div>
+                                             <div class="col-3">
+                                                <input type="checkbox" value="claude-2" class="form-check-input" name="suggestedModelsModal" id="claude-2">
+                                                <label  class="form-label smaller-label text-secondary" for="claude2">Claude 2</label>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="modal-footer">
+                              <button type="button" id = "sharePrompt" class="btn btn-sm btn-secondary" data-dismiss="modal">
+                              <span class="spinner-border spinner-border-sm" id="share-loading" style="display: none" aria-hidden="true"></span>
+                              <i class="bi bi-share" id="share-icon"></i> Share</button>
+                              <button type="button" id="savePrompt" class="btn btn-sm btn-secondary">
+                              <span class="spinner-border spinner-border-sm" id="save-loading" style="display: none" aria-hidden="true"></span>
+                              <i class="bi bi-save" id="save-icon"></i> Save</button>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="d-flex justify-content-center">
+                     <div id = "personal-spinner" class="spinner-border" style="display: none" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                     </div>
+                  </div>
+                  <div id="load-hidden-personal" >
+                     <div class="fixed-top">
+                        <div id="error-message-holder"></div>
+                        <h6 id="personal_num_prompts" style="display: inline-block; margin-right: 20px;"></h6>
+                        <button id="add_personal_prompt" style="display: inline-block" class = "btn btn-sm btn-success"> <i class="bi bi-plus-circle"></i> New Prompt </button>
+                        <hr>
+                     </div>
+                     <div id="personal-card-container" class="card-container"></div>
+                  </div>
+               </div>
+               <div class="tab-pane fade" id="v-pills-community" role="tabpanel" aria-labelledby="v-pills-community-tab" tabindex="0">
+                  <div class="modal fade" id="communityPromptModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                     <div class="modal-dialog">
+                        <div class="modal-content">
+                           <div id="modal-error-message-holder2"></div>
+                           <div class="modal-header">
+                              <div id="expandModalTitle"></div>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                           </div>
+                           <div class="modal-body">
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="d-flex justify-content-center">
+                     <div id = "community-spinner" class="spinner-border" style="display: none" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                     </div>
+                  </div>
+                  <div id="load-hidden-community" >
+                     <div class="fixed-top">
+                        <h6 id="num_prompts" style="display: inline-block; margin-right: 20px;"></h6>
+                        <div style="display: inline-block; margin-right: 20px;" id="currently-tagged"></div>
+                        <div class="btn-group smaller-height-input" role="group" style="display: inline-block;">
+                           <button type="button" id="popular_prompts" class="btn">Popular</button>
+                           <button type="button" id="new_prompts" class="btn">New</button>
+                        </div>
+                        <br>
+                        <small style="margin-bottom: 0;">Popular tags</small>
+                        <div id="popular-tags"></div>
+                        <hr>
+                     </div>
+                     <div id="card-container" class="card-container"></div>
+                  </div>
+               </div>
+               <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="settings-page" tabindex="0">
+                  <div class="d-flex justify-content-center">
+                     <div id = "settings-spinner" class="spinner-border" style="display: none" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                     </div>
+                  </div>
+                  <div id="settings-items">
+                     <div class="row">
+                        <div class="col-3" style="">
+                           <label for="modelSelect" class="form-label smaller-label text-secondary">Preferred Model:</label>
+                        </div>
+                        <div class="col-9">
+                           <label for="apiKeyInput" class="form-label smaller-label text-secondary">API Key:</label>
+                        </div>
+                     </div>
+                     <div class="row">
+                        <div class="col-3">
+                           <select class="form-select" id="modelSelect">
+                              <option value="gpt3.5-free">GPT 3.5 (Free)</option>
+                              <option value="gpt-3.5-turbo">GPT 3.5</option>
+                              <option value="gpt-4">GPT 4</option>
+                              <option value="geminiPro">Gemini Pro</option>
+                           </select>
+                        </div>
+                        <div class="col-7">
+                           <input type="text" class="form-control" id="apiKeyInput" placeholder="Enter API Key">
+                        </div>
+                        <div class="col-2">
+                           <button type="button" id = "addAPIKey" class="btn btn-primary">Add </button>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"> </script>
+      <script>
+         /**
+          * On document load, assign click handlers to each button and try to load the
+          * user's origin and destination language preferences if previously set.
+          */
+         $(function() {
+           $('#popular_prompts').click(updatePopular);
+           $('#new_prompts').click(updateNew);
+           $('#addAPIKey').click(setAPIKeyInfo);
+           $("#modelSelect").change(function() {
+             fetchAPIKeyInfo();
+           });
+           $('#add_personal_prompt').click(function() {
+             openPersonalPromptModal();
+           })
+           $('#sharePrompt').click(function() {
+             sharePromptToCommunity();
+           })
+           updatePersonalPage();
+           $("#private-prompts-page").on("click", function() {
+             updatePersonalPage();
+           });
+           $("#community-prompts-page").on("click", function() {
+             updatePopular();
+           })
+           $("#settings-page").on("click", function() {
+               initSettingsPage();
+           })
+           $("#apiKeyInput").on("input", function() {
+               if ($(this).val().length > 0) {
+                 $("#addAPIKey").removeAttr("disabled");
+               } else {
+                 $("#addAPIKey").attr('disabled', 'disabled');
+               }
+           });
+         })
+         
+         function openPersonalPromptModal() {
+           $('#personalExpandModalTitle').text("New Private Prompt");
+           $("#formTitle").val("");
+           $("#formEmoji").val("👨‍💻");
+           $("#prompt").val("")
+           $("#temperature").val(0.2);
+           $("#parsingOutputPattern").val("");
+           $("#parsingOutputReplacement").val("");
+           $("#injectionMode").val("replace");
+           $("#description").val("");
+           $("#tags").val("");
+           $("#username").val("");
+           recommendedModels = ["gpt-3\\.5", "gpt-4", "palm-2", "gemini-pro", "claude-1", "claude-2"];
+           recommendedModels.forEach(function(id) {
+               $('#' + id).prop('checked', false);
+           });
+           $('#savePrompt').off('click');
+           $("#savePrompt").on('click', function() {
+               createLocalPrompt();
+           });
+           $('#accordionAdvancedSettings').collapse('hide');
+           $('#accordionSharing').collapse('hide');
+           $("#personalPromptModal").modal('show');
+         }
+         
+         function updatePersonalPage() {
+           $('#personal-card-container').empty();
+           $("#personal-spinner").show();
+           $("#load-hidden-personal").hide();
+           google.script.run.withSuccessHandler(function(output) {
+             favorites = output[0];
+             privatePrompts = output[1];
+             $('#personal_num_prompts').text(Object.keys(privatePrompts).length + " Private Prompts");
+             $("#personal_num_prompts").attr("count", Object.keys(privatePrompts).length);
+             createPaginatedPersonalCards(privatePrompts, favorites);
+             $("#personal-spinner").hide();
+             $("#load-hidden-personal").show();
+           }).getFavoritesForToolbar();
+         }
+         
+         function createPaginatedPersonalCards(dict, favorites) {
+           arr = Object.entries(dict);
+           favorites = new Set(favorites);
+           for (var i = 0; i < arr.length; i++) {
+             var elem = arr[i];
+             var key = elem[0];
+             var dictPrompt = elem[1];
+             var favorite = favorites.has(key);
+             var card = createInfoCardPersonal(dictPrompt.prompt, dictPrompt.tags, dictPrompt.userName, dictPrompt.description, dictPrompt.icon, dictPrompt.promptRunCount, dictPrompt.created, dictPrompt.title, dictPrompt.outputParsingPattern, dictPrompt.outputParsingReplacement, dictPrompt.recommendedModels, dictPrompt.injectionMode, dictPrompt.temperature, dictPrompt, key, favorite);
+             $('#personal-card-container').append(card);
+           }
+         }
+         
+         function createInfoCardPersonal(prompt, tags, userName, description, icon, promptRunCount, dateCreated, title, outputParsingPattern, outputParsingReplacement, recommendedModels, injectionMode, temperature, completeDict, uiud, fav) {
+         
+           dateCreated = new Date(dateCreated);
+           dateCreated = dateCreated.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+         
+           var savedValues = {
+               title: title,
+               icon: icon,
+               prompt: prompt,
+               temperature: temperature,
+               outputParsingPattern: outputParsingPattern,
+               outputParsingReplacement: outputParsingReplacement,
+               injectionMode: injectionMode,
+               description: description,
+               tags: tags.join(', '), 
+               recommendedModels: recommendedModels,
+               userName: userName
+           };
+         
+           var cardHolderDiv = $('<div>').addClass('card-holder-div mt-3');
+           var card = $('<div>').addClass('card d-flex').css('height', '200px');
+           var cardBody = $('<div>').addClass('card-body mb-0 d-flex flex-column');
+           var cardTitle = $('<h6>').addClass('card-title title-text-over').text(savedValues.title);
+           var circleDiv = $("<div>").addClass("circle me-1");
+           circleDiv.append(savedValues.icon);
+           cardTitle.prepend(circleDiv);
+           cardTitle.css('display', 'flex');
+           cardTitle.css('align-items', 'center'); 
+           var cardSubtitle = $('<small>').addClass('card-subtitle mb-2 text-body-secondary').text(dateCreated + ' | ' + promptRunCount + ' runs');
+           var promptText = $('<small>').addClass('card-text-over').text(savedValues.prompt);
+         
+           cardBody.append(cardTitle, cardSubtitle, promptText);
+         
+           card.append(cardBody);
+           cardHolderDiv.append(card);
+         
+         
+           var deleteButton = $('<button class="btn"><i style="font-size: 1.2rem" class="bi bi-trash"></i></button>');
+           card.append(deleteButton);
+         
+           deleteButton.css({
+               'position': 'absolute',
+               'top': '-1px',
+               'right': '5px',
+               'border-radius': '50%', 
+               'padding': '2px', 
+               'background-color': 'transparent', 
+               'border': 'none' 
+           });
+         
+         
+         card.hover(function() {
+             $(this).css({
+                 'box-shadow': '0 4px 8px 0 rgba(0,0,0,0.2)',
+                 'cursor': 'pointer',
+                 'position': 'relative' 
+             });
+         }, function() {
+             $(this).css({
+                 'box-shadow': 'none',
+                 'cursor': 'default'
+             });
+         });
+         
+         
+         deleteButton.on('click', function(event) {
+           event.stopPropagation();
+           var card = deleteButton.closest('.card-holder-div');
+           card.remove();
+           var count = parseInt($('#personal_num_prompts').attr("count")) - 1;
+           $('#personal_num_prompts').text(count + " Private Prompts");
+           $('#personal_num_prompts').attr("count", count);
+           google.script.run.withSuccessHandler(function(newFavorites) {
+             localStorage.setItem('favorites', newFavorites);
+           }).withFailureHandler(function() {
+             showErrorMessage("error-message-holder", "Failed to remove prompt. Refresh and try again!");
+           }).removePrompt(uiud);
+         });
+         
+         
+         heartClass = fav ? "bi bi-heart-fill" : "bi bi-heart";
+         var heartButton = $('<button class="btn"><i style="font-size: 1.2rem" class="' + heartClass + '"></i></button>');
+         
+         card.prepend(heartButton);
+         
+         
+         heartButton.css({
+           'position': 'absolute',
+           'top': '-1px',
+           'right': '30px',
+           'border-radius': '50%', 
+           'padding': '2px', 
+           'background-color': 'transparent', 
+           'border': 'none'
+         });
+         
+         heartButton.on('click', function(event) {
+           event.stopPropagation();
+           heartEm = heartButton.find('i');
+         
+           if (heartEm.hasClass('bi-heart-fill')) {
+               heartEm.attr('class', "bi bi-heart");
+               google.script.run.withSuccessHandler(function(out) {
+                 if (out.length > 0) {
+                   localStorage.setItem('favorites', out);
+                 } 
+               }).withFailureHandler(function(){
+                  showErrorMessage("error-message-holder", "Failed to remove favorite. Refresh and try again!");
+               }).removePromptFavorite(uiud);
+           } else {
+               heartEm.attr('class', "bi bi-heart-fill");
+               google.script.run.withSuccessHandler(function(out) {
+                 if (out.length > 0) {
+                   localStorage.setItem('favorites', out);
+                 } else {
+                   heartEm.attr('class', "bi bi-heart");
+                   showErrorMessage("error-message-holder", "There are already 3 favorite prompts. Remove one to add a new favorite!");
+                 }
+               }).addPromptFavorite(uiud);
+           }
+         });
+         
+         
+         
+         
+         
+         function updateCardHolderDiv() {
+             cardTitle.text(savedValues.title);
+             circleDiv.empty();
+             circleDiv.append(savedValues.icon);
+             cardTitle.prepend(circleDiv);
+             promptText.text(savedValues.prompt);
+         }
+         
+         
+         card.on('click', function() {
+           event.stopPropagation();
+           $('#personalExpandModalTitle').text("Edit Prompt");
+           $("#formTitle").val(savedValues.title);
+           $("#formEmoji").val(savedValues.icon);
+           $("#prompt").val(savedValues.prompt);
+           $("#temperature").val(savedValues.temperature);
+           $("#parsingOutputPattern").val(savedValues.outputParsingPattern);
+           $("#parsingOutputReplacement").val(savedValues.outputParsingReplacement);
+           $("#injectionMode").val(savedValues.injectionMode);
+           $("#description").val(savedValues.description);
+           $("#tags").val(savedValues.tags);
+           $("#username").val(savedValues.userName);
+           $('input[name="suggestedModelsModal"]').prop('checked', false);
+           savedValues.recommendedModels.forEach(function(id) {
+               if (id == "gpt-3.5") {
+                 id = "gpt-3\\.5";
+               }
+               $('#' + id).prop('checked', true);
+           });
+         
+         
+           $('#savePrompt').off('click').on('click', function() {
+               var check = editLocalPrompt(card, uiud, completeDict);
+               if (check) {
+                 savedValues.title = $("#formTitle").val();
+                 savedValues.icon = $("#formEmoji").val();
+                 savedValues.prompt = $("#prompt").val();
+                 savedValues.temperature = $("#temperature").val();
+                 savedValues.outputParsingPattern = $("#parsingOutputPattern").val();
+                 savedValues.outputParsingReplacement = $("#parsingOutputReplacement").val();
+                 savedValues.injectionMode = $("#injectionMode").val();
+                 savedValues.description = $("#description").val();
+                 savedValues.tags = $("#tags").val();
+                 savedValues.recommendedModels = [];
+                 savedValues.userName = $("#username").val();
+                 $('input[name="suggestedModelsModal"]:checked').each(function() {
+                     savedValues.recommendedModels.push($(this).attr('id'));
+                 });
+                 updateCardHolderDiv();
+               }
+               
+           });
+           $('#accordionAdvancedSettings').collapse('hide');
+           $('#accordionSharing').collapse('hide');
+           $("#personalPromptModal").modal('show');
+         }); 
+         
+           return cardHolderDiv;
+         
+         }
+         
+         function editLocalPrompt(card, uiud, completeDict) {
+             beginLoading("savePrompt", "save-loading", "save-icon");
+             completeDict.title = $('#formTitle').val();
+             completeDict.icon = $('#formEmoji').val();
+             completeDict.prompt = $('#prompt').val();
+             completeDict.temperature = parseFloat($('#temperature').val());
+             completeDict.outputParsingPattern = $('#parsingOutputPattern').val();
+             completeDict.outputParsingReplacement = $('#parsingOutputReplacement').val();
+             completeDict.injectionMode = $('#injectionMode').val();
+             completeDict.description = $("#description").val();
+             var tags = $("#tags").val();
+             completeDict.tags = tags.split(",").map(function(tag) {
+               return tag.trim();
+             }).slice(0, 3);
+             completeDict.recommendedModels = [];
+             $('input[name="suggestedModelsModal"]:checked').each(function() {
+                 completeDict.recommendedModels.push($(this).attr('id'));
+             }); 
+             completeDict.userName = $("#username").val();
+         
+             if (!completeDict.title || !completeDict.prompt || !completeDict.temperature) {
+               showErrorMessage("modal-error-message-holder", "Please fill in all required fields!");
+               $('#accordionAdvancedSettings').collapse('hide');
+               $('#accordionSharing').collapse('hide');
+               endLoading("savePrompt", "save-loading", "save-icon");
+               return false;
+             }
+         
+             google.script.run.withSuccessHandler(function(favorites) {
+                 if (favorites.includes(uiud)) {
+                   localStorage.setItem('favorites',["", "", ""]);
+                   localStorage.setItem('favorites',favorites);
+                 }
+                 endLoading("savePrompt", "save-loading", "save-icon");
+             }).withFailureHandler(function() {
+                 showErrorMessage("modal-error-message-holder", "Failed to save prompt. Please try again!");
+                 $('#accordionAdvancedSettings').collapse('hide');
+                 $('#accordionSharing').collapse('hide');
+                 endLoading("savePrompt", "save-loading", "save-icon");
+             }).editPrompt(uiud, completeDict);
+             return true;
+         }
+         
+         function sharePromptToCommunity() {
+             beginLoading("sharePrompt", "share-loading", "share-icon");
+             var title = $('#formTitle').val();
+             var icon = $('#formEmoji').val();
+             var prompt = $('#prompt').val();
+             var temperature = parseFloat($('#temperature').val());
+             var injectionMode = $('#injectionMode').val();
+             var description = $("#description").val();
+             var tags = $("#tags").val();
+             var suggestedModels = [];
+             var outputParsingPattern = $('#parsingOutputPattern').val();
+             var outputParsingReplacement = $('#parsingOutputReplacement').val();
+         
+             if (!title || !prompt || !temperature ||!description) {
+                $('#accordionAdvancedSettings').collapse('hide');
+               $('#accordionSharing').collapse('hide');
+               showErrorMessage("modal-error-message-holder", "Please fill in all required fields!");
+               endLoading("sharePrompt", "share-loading", "share-icon");
+               return;
+             }
+         
+             $('input[name="suggestedModelsModal"]:checked').each(function() {
+                 suggestedModels.push($(this).attr('id'));
+             }); 
+             var userName = $("#username").val();
+           google.script.run.withSuccessHandler(function() {
+               endLoading("sharePrompt", "share-loading", "share-icon");
+           }).withFailureHandler(function() {
+              $('#accordionAdvancedSettings').collapse('hide');
+           $('#accordionSharing').collapse('hide');
+               showErrorMessage("modal-error-message-holder", "Failed to share prompt. Please try again!");
+               endLoading("sharePrompt", "share-loading", "share-icon");
+           }).sharePrompt(prompt, tags, temperature, userName, description, icon, title, suggestedModels, injectionMode, outputParsingPattern, outputParsingReplacement);
+         }
+         
+         function createLocalPrompt() {
+             beginLoading("savePrompt", "save-loading", "save-icon");
+             var title = $('#formTitle').val();
+             var emoji = $('#formEmoji').val();
+             var prompt = $('#prompt').val();
+             var temperature = parseFloat($('#temperature').val());
+             var parsingOutputPattern = $('#parsingOutputPattern').val();
+             var parsingOutputReplacement = $('#parsingOutputReplacement').val();
+             var injectionMode = $('#injectionMode').val();
+             var description = $("#description").val();
+             var tags = $("#tags").val();
+             tags = tags.split(",").map(function(tag) {
+               return tag.trim();
+             }).slice(0, 3);
+             var suggestedModels = [];
+         
+             $('input[name="suggestedModelsModal"]:checked').each(function() {
+                 suggestedModels.push($(this).attr('id'));
+             }); 
+             var userName = $("#username").val();
+             if (!title || !prompt || !temperature) {
+               $('#accordionAdvancedSettings').collapse('hide');
+               $('#accordionSharing').collapse('hide');
+               showErrorMessage("modal-error-message-holder", "Please fill in all required fields!");
+               endLoading("savePrompt", "save-loading", "save-icon");
+               return;
+             }
+         
+             // Call generateUUID first
+             google.script.run.withSuccessHandler(function(arrU) {
+               uiud = arrU[0];
+               userId = arrU[1];
+                 var finalInfo = {
+                     "prompt": prompt,
+                     "tags": tags,
+                     "temperature": temperature,
+                     "userID": userId,
+                     "userName": userName,
+                     "description": description,
+                     "icon": emoji,
+                     "forkFrom": "",
+                     "promptRunCount": 0,
+                     "created": new Date().toISOString(),
+                     "title": title,
+                     "outputParsingPattern": parsingOutputPattern,
+                     "outputParsingReplacement": parsingOutputReplacement,
+                     "recommendedModels": suggestedModels,
+                     "injectionMode": injectionMode
+                 };
+         
+                 google.script.run.withSuccessHandler(function() {
+                     newCard = createInfoCardPersonal(finalInfo.prompt, finalInfo.tags, finalInfo.userName, finalInfo.description, finalInfo.icon, finalInfo.promptRunCount, finalInfo.created, finalInfo.title, finalInfo.outputParsingPattern, finalInfo.outputParsingReplacement, finalInfo.recommendedModels, finalInfo.injectionMode, finalInfo.temperature, finalInfo, uiud);
+         
+                     var cardContainer = $('#personal-card-container');
+         
+                     cardContainer.append(newCard);
+                     var count = parseInt($('#personal_num_prompts').attr("count")) + 1;
+                     
+                     $('#personal_num_prompts').text(count + " Private Prompts");
+                     $('#personal_num_prompts').attr("count", count);
+                     $('#personalPromptModal').modal('hide');
+                     endLoading("savePrompt", "save-loading", "save-icon");
+                 }).withFailureHandler(function() {
+                     showErrorMessage("modal-error-message-holder", "Failed to save prompt. Please try again!");
+                     endLoading("savePrompt", "save-loading", "save-icon");
+                 }).addPrompt(uiud, finalInfo);
+             }).getUiudAndUserId();
+         }
+         
+         function createCommunityPrompt(prompt, tags, temperature, userName, description, emoji, title, parsingOutputPattern, parsingOutputReplacement, 
+         suggestedModels, injectionMode, addButton) {
+             addButton.attr('disabled', 'disabled');
+             
+             google.script.run.withSuccessHandler(function(arrU) {
+               uiud = arrU[0];
+               userId = arrU[1];
+               console.log(userId);
+                 var finalInfo = {
+                     "prompt": prompt,
+                     "tags": tags,
+                     "temperature": temperature,
+                     "userID": userId,
+                     "userName": userName,
+                     "description": description,
+                     "icon": emoji,
+                     "forkFrom": "",
+                     "promptRunCount": 0,
+                     "created": new Date().toISOString(),
+                     "title": title,
+                     "outputParsingPattern": parsingOutputPattern,
+                     "outputParsingReplacement": parsingOutputReplacement,
+                     "recommendedModels": suggestedModels,
+                     "injectionMode": injectionMode
+                 };
+                 google.script.run.withSuccessHandler(function() {
+                     addButton.removeAttr('disabled');
+                 }).withFailureHandler(function() {
+                     showErrorMessage("modal-error-message-holder2", "Failed to save prompt. Please try again!");
+                     addButton.removeAttr('disabled');
+                 }).addPrompt(uiud, finalInfo);
+             }).getUiudAndUserId();
+         }
+         
+         function initSettingsPage() {
+           $("#settings-spinner").show();
+           $("#settings-items").hide();
+           google.script.run.withSuccessHandler(function(selectedLLMValue) {
+             $("#settings-spinner").hide();
+              $("#settings-items").show();
+             $('#modelSelect').val(selectedLLMValue);
+           
+           if (selectedLLMValue == "gpt3.5-free") {
+             $('#apiKeyInput').val("");
+             $('#apiKeyInput').attr("disabled", "disabled");
+             $('#addAPIKey').attr("disabled", "disabled");
+           } else if (selectedLLMValue === "gpt-3.5-turbo" || selectedLLMValue === "gpt-4") {
+               google.script.run.withSuccessHandler(function(apiKey) {
+                 $('#apiKeyInput').removeAttr("disabled");
+                 if (apiKey) {
+                   $('#apiKeyInput').val(apiKey);
+                   $('#addAPIKey').text("Update");
+                   $("#addAPIKey").removeAttr("disabled");
+                 } else {
+                   $('#addAPIKey').text("Add");
+                 }
+               }).getOpenAIAPIKey();
+           } else if (selectedLLMValue === "geminiPro") {
+               $('#apiKeyInput').removeAttr("disabled");
+               google.script.run.withSuccessHandler(function(apiKey) {
+                 if (apiKey) {
+                   $('#apiKeyInput').val(apiKey);
+                   $('#addAPIKey').text("Update");
+                   $("#addAPIKey").removeAttr("disabled");
+                 } else {
+                   $('#addAPIKey').text("Add");
+                 }
+               }).getGeminiAPIKey();
+           }
+           }).getPrefModel();
+         }
+         
+         function fetchAPIKeyInfo() {
+           var selectedLLMValue = $('#modelSelect').val();
+           google.script.run.withSuccessHandler(function(){
+           }).setPrefModel(selectedLLMValue);
+           if (selectedLLMValue == "gpt3.5-free") {
+             $('#apiKeyInput').val("");
+             $('#apiKeyInput').attr("disabled", "disabled");
+             $('#addAPIKey').attr("disabled", "disabled");
+           } else if (selectedLLMValue === "gpt-3.5-turbo" || selectedLLMValue === "gpt-4") {
+               google.script.run.withSuccessHandler(function(apiKey) {
+                 $('#apiKeyInput').removeAttr("disabled");
+                 if (apiKey) {
+                   $('#apiKeyInput').val(apiKey);
+                   $('#addAPIKey').text("Update");
+                   $("#addAPIKey").removeAttr("disabled");
+                 } else {
+                   $('#addAPIKey').text("Add");
+                 }
+               }).getOpenAIAPIKey();
+           } else if (selectedLLMValue === "geminiPro") {
+               $('#apiKeyInput').removeAttr("disabled");
+               google.script.run.withSuccessHandler(function(apiKey) {
+                 if (apiKey) {
+                   $('#apiKeyInput').val(apiKey);
+                   $('#addAPIKey').text("Update");
+                   $("#addAPIKey").removeAttr("disabled");
+                 } else {
+                   $('#addAPIKey').text("Add");
+                 }
+               }).getGeminiAPIKey();
+           }
+         }
+         
+         function setAPIKeyInfo() {
+           var selectedLLMValue = $('#modelSelect').val();
+           var newKey = $('#apiKeyInput').val();
+           if (selectedLLMValue == "gpt-3.5-turbo" || selectedLLMValue == "gpt-4") {
+               google.script.run.withSuccessHandler(function() {
+                 $('#addAPIKey').text("Update");
+               }).setOpenAIAPIKey(newKey);
+           } else if (selectedLLMValue == "geminiPro") {
+               google.script.run.withSuccessHandler(function() {
+                 $('#addAPIKey').text("Update");
+               }).setGeminiAPIKey(newKey);
+           }
+         }
+         
+         function updatePopular() {
+           $("#popular_prompts").attr("class", "btn active btn-light btn-sm");
+           $("#new_prompts").attr("class",  "btn btn-light btn-sm");
+           $('#card-container').empty();
+           $("#pages-container").empty();
+           $("#currently-tagged").empty();
+           loadPagePopularElements();
+         }
+         
+         function updateNew() {
+           $("#popular_prompts").attr("class", "btn btn-light btn-sm");
+           $("#new_prompts").attr("class",  "btn active btn-light btn-sm");
+           $('#card-container').empty();
+           $("#pages-container").empty();
+           $("#currently-tagged").empty();
+           loadPageNewElements();
+         }
+         
+          function loadPagePopularElements() {
+           $("#community-spinner").show();
+           $("#load-hidden-community").hide();
+           google.script.run.withSuccessHandler(function(output) {
+             tags = output[0];
+             popular = output[1];
+             $('#num_prompts').text(popular.length + " Public Prompts");
+             console.log(popular);
+             createPaginatedCards(popular);
+             createTagElements(tags, true);
+             $("#community-spinner").hide();
+             $("#load-hidden-community").show();
+           }).getPopularTagsAndMostPopular();
+         }
+         
+         function loadPageNewElements() {
+           $("#community-spinner").show();
+           $("#load-hidden-community").hide();
+           google.script.run.withSuccessHandler(function(output) {
+             tags = output[0];
+             recents = output[1];
+             $('#num_prompts').text(recents.length + " prompts");
+             createPaginatedCards(recents);
+             createTagElements(tags, false);
+             $("#community-spinner").hide();
+             $("#load-hidden-community").show();
+           }).getPopularTagsAndMostRecent();
+         }
+         
+         function createPaginatedCards(arr) {
+           for (var i = 0; i < arr.length; i++) {
+             var elem = arr[i];
+              var card = createInfoCard(elem.prompt, elem.tags, elem.temperature, elem.userName, elem.description, elem.icon, elem.promptRunCount, elem.title, elem.recommendedModels, elem.injectionMode, elem.created, elem.outputParsingPattern, elem.outputParsingReplacement);
+              $('#card-container').append(card);
+           }
+         }
+         
+         function tagClickFunction(popular, tagP) {
+           $("#community-spinner").show();
+           $("#load-hidden-community").hide();
+           $('#card-container').empty();
+           $("#pages-container").empty();
+           if (!popular) {
+             google.script.run.withSuccessHandler(function(recents) {
+                 $('#num_prompts').text(recents.length + " prompts");
+                 createPaginatedCards(recents);
+                 $("#community-spinner").hide();
+                 $("#load-hidden-community").show();
+             }).getMostRecent(tagP.tag);
+           } else {
+             google.script.run.withSuccessHandler(function(popular) {
+                 $('#num_prompts').text(popular.length + " prompts");
+                 createPaginatedCards(popular);
+                 $("#community-spinner").hide();
+                 $("#load-hidden-community").show();
+             }).getMostPopular(tagP.tag);
+           }
+         }
+         
+         function createTagElements(tags, popular) {
+           var popularTagsDiv = $("#popular-tags");
+           popularTagsDiv.empty();
+           var maxTagsToShow = 15; 
+           var showingMore = false; 
+         
+           tags.forEach(function(tagP, index) {
+               var tagElement = $("<span>")
+                   .addClass("badge badge-blue me-1")
+                   .text(tagP.tag);
+         
+         
+               if (index >= maxTagsToShow) {
+                   tagElement.attr('hidden', 'hidden');
+                   tagElement.addClass("more-less");
+               }
+         
+               popularTagsDiv.append(tagElement);
+         
+               tagElement.on('click', function() {
+                   $("#community-spinner").show();
+                   $("#load-hidden-community").hide();
+                   $('#card-container').empty();
+                   $("#pages-container").empty();
+         
+                   $('#currently-tagged').empty();
+                   var selectedDesc = $("<small>").text("tagged: "); 
+                   var selectedTag = $("<span>")
+                   .addClass("badge badge-blue me-1")
+                   .text(tagP.tag);
+                   var closeSelected = $('<i>').addClass('bi bi-x');
+                   closeSelected.click(function() {
+                       $('#currently-tagged').empty();
+                       if ($("#popular_prompts").hasClass("active")) {
+                           updatePopular();
+                       } else if ($("#new_prompts").hasClass("active")) {
+                           updateNew();
+                       } 
+                   });
+                   selectedTag.append(closeSelected);
+                   $('#currently-tagged').append(selectedDesc, selectedTag);
+         
+                   if (!popular) {
+                       google.script.run.withSuccessHandler(function(recents) {
+                           $('#num_prompts').text(recents.length + " Public Prompts");
+                           createPaginatedCards(recents);
+                           $("#community-spinner").hide();
+                           $("#load-hidden-community").show();
+                       }).getMostRecent(tagP.tag);
+                   } else {
+                       google.script.run.withSuccessHandler(function(popular) {
+                           $('#num_prompts').text(popular.length + " Public Prompts");
+                           createPaginatedCards(popular);
+                           $("#community-spinner").hide();
+                           $("#load-hidden-community").show();
+                       }).getMostPopular(tagP.tag);
+                   }
+               });
+           });
+         
+         
+           if (tags.length > maxTagsToShow) {
+               var moreLessButton = $("<span>")
+                   .addClass("badge text-bg-light badge-grey me-1")
+                   .text("More");
+               moreLessButton.on('click', function() {
+                   showingMore = !showingMore; // Toggle state
+         
+                   if (showingMore) {
+                       popularTagsDiv.find('.badge').removeAttr('hidden');
+                       moreLessButton.text("Less");
+                   } else {
+                       popularTagsDiv.find('.more-less').attr('hidden', 'hidden');
+                       moreLessButton.text("More");
+                   }
+               }); 
+               popularTagsDiv.append(moreLessButton);
+           }
+         
+           
+         }
+         
+         function createInfoCard(prompt, tags, temperature, userName, description, icon, promptRunCount, title, recommendedModels, injectionMode, dateCreated, outputParsingPattern, outputParsingReplacement) {
+           dateCreated = new Date(dateCreated);
+           dateCreated = dateCreated.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+         
+           if (!userName) {
+               userName = "Anonymous";
+           }
+         
+           var cardHolderDiv = $('<div>').addClass('card-holder-div mt-3');
+           var card = $('<div>').addClass('card d-flex').css('height', '200px');
+           var cardBody = $('<div>').addClass('card-body mb-0 d-flex flex-column');
+           var cardTitle = $('<h6>').addClass('card-title title-text-over').text(title);
+           var circleDiv = $("<div>").addClass("circle me-1");
+           circleDiv.append(icon);
+           cardTitle.prepend(circleDiv);
+           cardTitle.css('display', 'flex');
+           cardTitle.css('align-items', 'center'); // Center the items vertically
+           var cardSubtitle = $('<small>').addClass('card-subtitle mb-2 text-body-secondary').text(userName + ' | ' + dateCreated + ' | ' + promptRunCount + ' runs');
+         
+           var hiddenDiv = $('<div>');
+           var promptText = $('<small>').addClass('card-text-over').text(prompt);
+           var tagDiv = $('<div>').addClass('mt-auto');
+           for (var i = 0; i < tags.length; i++) {
+               var badge = $('<span>').addClass('badge badge-blue me-1').text(tags[i]);
+               tagDiv.append(badge);
+           }
+           hiddenDiv.append(promptText);
+         
+           cardBody.append(cardTitle, cardSubtitle, hiddenDiv, tagDiv);
+         
+           card.append(cardBody);
+           cardHolderDiv.append(card);
+         
+           card.hover(function() {
+               $(this).css({
+                   'box-shadow': '0 4px 8px 0 rgba(0,0,0,0.2)',
+                   'cursor': 'pointer'
+               });
+           }, function() {
+               $(this).css({
+                   'box-shadow': 'none',
+                   'cursor': 'default'
+               });
+           });
+         
+           card.on('click', function() {
+               var titleElement = $('<h6>').addClass('card-title').text(title);
+               var circleDiv = $("<div>").addClass("circle me-1");
+               circleDiv.append(icon);
+               titleElement.prepend(circleDiv);
+               titleElement.css('display', 'flex');
+               titleElement.css('align-items', 'center');
+               $("#expandModalTitle").empty();
+               $("#expandModalTitle").append(titleElement);
+               var subtitleElement = $('<small>').addClass('text-body-secondary').text(userName + ' | ' + dateCreated + ' | ' + promptRunCount + ' runs');
+               var addButton = $('<button>').addClass('btn btn-sm btn-success ms-2').text('Add').css({
+                   'height': '20px',
+                   'display': 'flex',
+                   'align-items': 'center' 
+               });
+         
+               addButton.on('click', function() {
+                 createCommunityPrompt(prompt, tags, temperature, userName, description, icon, title, outputParsingPattern, outputParsingReplacement, 
+         recommendedModels, injectionMode, addButton);
+               })
+         
+               var subtitleContainer = $('<div>').css('display', 'flex').append(subtitleElement, addButton);
+               $("#expandModalTitle").append(subtitleContainer);
+               
+               var cardBody = $('<div>');
+               var descriptionHeading = $('<b>').text('Description').css({ 'font-size': '14px'});
+               var descriptionText = $('<small>').text(description);
+         
+               var hiddenDiv = $('<div>');
+               var promptHeading = $('<b>').text('Prompt').css({ 'font-size': '14px'});
+               var promptText = $('<small>').text(prompt);
+               var tagsHeading = $('<b>').text('Tags').css({ 'font-size': '14px'});
+               var tagDiv = $('<div>');
+               for (var i = 0; i < tags.length; i++) {
+                   var badge = $('<span>').addClass('badge badge-blue me-1').text(tags[i]);
+                   tagDiv.append(badge);
+               }
+         
+               var moreInfoHeading = $('<b>').text('More Info').css({ 'font-size': '14px'});
+               var injectionModeText = $('<p>').css({ 'font-size': '13px', 'margin-bottom': '0', 'padding-bottom': '0' }).text('Injection mode: ' + injectionMode);
+               var editRecommendedModels = recommendedModels.length > 0 ? recommendedModels.join(', ') : "N/A";
+               var modelsText = $('<p>').css({ 'font-size': '13px', 'margin-bottom': '0', 'padding-bottom': '0' }).text('Models: ' + editRecommendedModels);
+         
+               hiddenDiv.append(promptHeading, $('<br>'), promptText, $('<br>'), tagsHeading, tagDiv, moreInfoHeading, injectionModeText, modelsText);
+         
+               cardBody.append(descriptionHeading, $('<br>'), descriptionText, hiddenDiv);
+               $("#communityPromptModal .modal-body").empty();
+               $("#communityPromptModal .modal-body").append(cardBody);
+               $("#communityPromptModal").modal('show');
+           });
+         
+           return cardHolderDiv;
+         }
+         
+         function beginLoading(buttonId, loadingId, iconId) {
+           $("#"+loadingId).show();
+           $("#"+buttonId).attr('disabled', 'disabled');
+           if (iconId) {
+             $("#"+iconId).hide();
+           }
+         }
+         
+         function endLoading(buttonId, loadingId, iconId) {
+           $("#"+loadingId).hide();
+           $("#"+buttonId).removeAttr('disabled');
+           if (iconId) {
+             $("#"+iconId).show();
+           }
+         }
+         
+         function validateEmoji(input) {
+           let value = input.value;
+           let unicodeLength = Array.from(value).length;
+           const emojiRegex = /^\p{Emoji}/u;
+           const matches = value.match(emojiRegex);
+           if (!matches) {
+             input.value = value.charAt(0);
+           } else {
+             input.value = matches[0];
+           }
+         }
+         
+         function showErrorMessage(divId, message) {
+           const alertPlaceholder = $('#'+divId);
+           const alert = $(
+             `<div class="alert alert-danger d-flex align-items-center justify-content-between justify-content-center" style=" margin: 0 auto; font-size: 14px; border-radius: 8px; padding: 3px; color: #c62828; background-color: #ffebee;" role="alert">
+               <i class="bi bi-x-circle" style="font-size: 1.2em; margin-right: 5px;"></i>
+               <span>${message}</span>
+               <div class="d-flex align-items-center">
+                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+               </div>
+             </div>`
+           );
+           alertPlaceholder.append(alert);
+           setTimeout(function() {
+             alert.fadeOut(function() {
+                 $(this).remove(); 
+             });
+         }, 5000);
+         } 
+      </script>
+   </body>
+</html>
