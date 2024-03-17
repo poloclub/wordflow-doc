@@ -7,3 +7,7 @@ Wordflow is a social and customizable AI writing assistant tool! With Wordflow, 
 
 https://github.com/poloclub/wordflow-doc/assets/67703406/24bda254-2110-4540-8283-b3e42a0665e3
 
+Music: Peaceful Corporate by Stock-Waves
+https://protunes.net/
+Video Link: https://bit.ly/41O2NAT
+
