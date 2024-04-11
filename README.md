@@ -8,12 +8,15 @@ Download Wordflow on the Google Workspace Marketplace [here](https://workspace.g
 
 ## Features
 Wordflow contains a prompting sidebar as shown below.
-<img src="https://github.com/poloclub/wordflow-doc/assets/67703406/7e7c472f-b84f-48e1-aebc-f3b384e98eb1" width="100" height="100">
+<img src="https://github.com/poloclub/wordflow-doc/assets/67703406/7e7c472f-b84f-48e1-aebc-f3b384e98eb1" width="700" height="400">
+
 Within the prompting sidebar, you can use the prompting toolbar to run any of three favorite prompts, as well as create/save a new prompt with specific settings (temperature, Regex parsing, etc.). 
 
-<img src="https://github.com/poloclub/wordflow-doc/assets/67703406/e5cd018d-d81f-47be-afef-41d1d4be745a" width="100" height="100">
-<img src="https://github.com/poloclub/wordflow-doc/assets/67703406/5636c020-da75-46a1-94d4-71b9627bfcab" width="100" height="100">
-Within the Prompt Manager, you can view "Community" prompts as well as your saved personal prompts. Click the heart icon to save upto 3 prompts to be displayed in the prompting toolbar. Also, click on the "Add" button on any of the community prompts to save it to your personal prompts.
+<img src="https://github.com/poloclub/wordflow-doc/assets/67703406/e5cd018d-d81f-47be-afef-41d1d4be745a" width="700" height="500">
+<img src="https://github.com/poloclub/wordflow-doc/assets/67703406/5636c020-da75-46a1-94d4-71b9627bfcab" width="700" height="500">
+
+
+Within the Prompt Manager, you can view community prompts as well as your saved personal prompts. Click the heart icon to save upto 3 prompts to be displayed in the prompting toolbar. Also, click on the "Add" button on any of the community prompts to save it to your personal prompts.
 
 
 ## Development
@@ -28,4 +31,5 @@ https://github.com/poloclub/wordflow-doc/assets/67703406/24bda254-2110-4540-8283
 Music: Peaceful Corporate by Stock-Waves
 https://protunes.net/
 Video Link: https://bit.ly/41O2NAT
+
 
