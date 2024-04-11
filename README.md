@@ -8,11 +8,11 @@ Download Wordflow on the Google Workspace Marketplace [here](https://workspace.g
 
 ## Features
 Wordflow contains a prompting sidebar as shown below.
-![image](https://github.com/poloclub/wordflow-doc/assets/67703406/7e7c472f-b84f-48e1-aebc-f3b384e98eb1)
+![image](https://github.com/poloclub/wordflow-doc/assets/67703406/7e7c472f-b84f-48e1-aebc-f3b384e98eb1 | width=100)
 Within the prompting sidebar, you can use the prompting toolbar to run any of three favorite prompts, as well as create/save a new prompt with specific settings (temperature, Regex parsing, etc.). 
 
-![image](https://github.com/poloclub/wordflow-doc/assets/67703406/e5cd018d-d81f-47be-afef-41d1d4be745a)
-![image](https://github.com/poloclub/wordflow-doc/assets/67703406/5636c020-da75-46a1-94d4-71b9627bfcab)
+![image](https://github.com/poloclub/wordflow-doc/assets/67703406/e5cd018d-d81f-47be-afef-41d1d4be745a | width=100)
+![image](https://github.com/poloclub/wordflow-doc/assets/67703406/5636c020-da75-46a1-94d4-71b9627bfcab | width=100)
 Within the Prompt Manager, you can view "Community" prompts as well as your saved personal prompts. Click the heart icon to save upto 3 prompts to be displayed in the prompting toolbar. Also, click on the "Add" button on any of the community prompts to save it to your personal prompts.
 
 
