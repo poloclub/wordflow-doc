@@ -74,7 +74,28 @@ function onOpen(e) {
   DocumentApp.getUi()
     .createMenu("Wordflow")
     .addItem("Launch", "showSidebar")
+    .addItem("Privacy", "showPrivacyPolicy")
     .addToUi();
+}
+
+function onLoadPrivacy() {
+  if (!getPrivacyAcceptance()) {
+    showPrivacyPolicy();
+  }
+}
+
+function getPrivacyAcceptance() {
+  const userProperties = PropertiesService.getUserProperties();
+  if (userProperties.getProperty("privacy")) {
+    console.log("true");
+    return true;
+  }
+  return false;
+}
+
+function setPrivacyAcceptance() {
+  const userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty("privacy", "true");
 }
 
 function getUiudAndUserId() {
@@ -267,6 +288,7 @@ function removePrompt(uiud) {
 function showSidebar() {
   initDefaults();
   initPrefModel();
+  onLoadPrivacy();
   var ui =
     HtmlService.createHtmlOutputFromFile("sidebar").setTitle("Wordflow");
   DocumentApp.getUi().showSidebar(ui);
@@ -278,6 +300,14 @@ function showPromptManager() {
     .setHeight(500)
     .setTitle("Prompt Manager");
   DocumentApp.getUi().showModalDialog(promptManager, "Prompt Manager");
+}
+
+function showPrivacyPolicy() {
+  const privacyPolicy = HtmlService.createHtmlOutputFromFile("privacypolicy")
+    .setWidth(500)
+    .setHeight(175)
+    .setTitle("Wordflow Privacy Policy");
+  DocumentApp.getUi().showModalDialog(privacyPolicy, "Wordflow Privacy Policy");
 }
 
 /**
@@ -383,6 +413,9 @@ function completion(input, selectedText, modeltype, temperature, usesel) {
 
 function geminiCompletion(input, selectedText, temperature, usesel) {
   var geminiApiKey = getGeminiAPIKey();
+  if (usesel) {
+    input += "\n"+selectedText;
+  }
   var messages = [
     {
       role: "user",
@@ -393,16 +426,6 @@ function geminiCompletion(input, selectedText, temperature, usesel) {
       ],
     },
   ];
-  if (usesel) {
-    messages.push({
-      role: "user",
-      parts: [
-        {
-          text: selectedText,
-        },
-      ],
-    });
-  }
 
   var payload = {
     contents: messages,
